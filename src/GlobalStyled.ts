@@ -20,6 +20,10 @@ img {
   display: block;
 }
 
+input {
+  all: unset;
+}
+
 :root {
   --main-color: #202124;
   --point-color: #673ab7;

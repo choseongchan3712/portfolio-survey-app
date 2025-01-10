@@ -4,6 +4,7 @@ import NewPage from "./Page/NewPage";
 import SavedPage from "./Page/SavedPage";
 import Preview from "./Page/Preview";
 import Write from "./Page/Write";
+import Answer from "./Page/Answer";
 
 const Router = () => {
   return (
@@ -14,6 +15,7 @@ const Router = () => {
         <Route path="/saved_page" element={<SavedPage />} />
         <Route path="/preview" element={<Preview />} />
         <Route path="/write" element={<Write />} />
+        <Route path="/answer" element={<Answer />} />
       </Routes>
     </HashRouter>
   );
