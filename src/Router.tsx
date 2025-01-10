@@ -4,12 +4,10 @@ import NewPage from "./Page/NewPage";
 import SavedPage from "./Page/SavedPage";
 import Preview from "./Page/Preview";
 import Write from "./Page/Write";
-import Header from "./Components/global/Header";
 
 const Router = () => {
   return (
     <HashRouter>
-      <Header />
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/new_page" element={<NewPage />} />
