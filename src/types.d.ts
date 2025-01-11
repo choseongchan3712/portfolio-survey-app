@@ -5,3 +5,14 @@ export interface InputWrapType {
   color:string;
   gap: string;
 }
+
+export interface QuestionWrapType {
+  children: React.ReactNode;
+}
+
+export interface QuestionType {
+  id: number;
+  index: number;
+  moveItem: (dragIndex: number, hoverIndex: number) => void;
+}
+

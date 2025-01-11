@@ -7,6 +7,7 @@ import {
   spaceClicked,
   titleClicked,
 } from "../store/newPageClickedSlice";
+import QuestionWrap from "../Components/new_page/QuestionWrap";
 
 const Container = styled.div`
   position: relative;
@@ -55,6 +56,7 @@ const NewPage = (): JSX.Element => {
       <div className="wrap">
         <div className="contents">
           <TitleWrap />
+          <QuestionWrap />
         </div>
       </div>
     </Container>
