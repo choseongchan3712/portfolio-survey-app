@@ -9,7 +9,7 @@ const Container = styled.div`
 `;
 
 const QuestionWrap = (): JSX.Element => {
-  const [datas, setDatas] = useState<number[]>([1, 2]);
+  const [datas, setDatas] = useState<number[]>([1]);
 
   const moveItem = (dragIndex: number, hoverIndex: number) => {
     const updatedDatas = [...datas];

@@ -76,6 +76,8 @@ const TitleWrap = (): JSX.Element => {
         size="30px"
         color="var(--main-color)"
         gap="10px"
+        holder=""
+        bgColor=""
       />
       <InputWrap
         dataId="title"
@@ -83,6 +85,8 @@ const TitleWrap = (): JSX.Element => {
         size="var(--small-size)"
         color="var(--gray-4)"
         gap="0"
+        holder=""
+        bgColor=""
       />
     </Container>
   );

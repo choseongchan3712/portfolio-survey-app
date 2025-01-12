@@ -32,7 +32,7 @@ input {
   --box-color: #fff;
   --border-color: #dadce0;
   --gray-1: #f1f3f4;
-  --gray-2: ##B9B9B9;
+  --gray-2: #B9B9B9;
   --gray-3: #80868b;
   --gray-4: #5f6368;
 

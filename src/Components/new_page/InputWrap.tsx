@@ -19,19 +19,19 @@ interface Props {
   bold: boolean;
   italic: boolean;
   underline: boolean;
+  bgColor: string;
 }
 
 const Container = styled.div<Props>`
   position: relative;
   z-index: 4;
   width: 100%;
-
   padding-bottom: ${(props) => props.gap};
   input {
     position: relative;
     z-index: 5;
     width: 100%;
-    padding: 10px 0;
+    padding: 10px 0 10px 5px;
     color: ${(props) => props.color};
     font-size: ${(props) => props.size};
     border-bottom: ${(props) =>
@@ -43,6 +43,7 @@ const Container = styled.div<Props>`
     font-weight: ${(props) => (props.bold ? "bold" : "normal")};
     font-style: ${(props) => (props.italic ? "italic" : "normal")};
     text-decoration: ${(props) => (props.underline ? "underline" : "none")};
+    background-color: ${(props) => props.bgColor};
   }
   .text_menu {
     padding-top: 5px;
@@ -89,13 +90,14 @@ const InputWrap = ({
   size,
   color,
   gap,
+  holder,
+  bgColor,
 }: InputWrapType): JSX.Element => {
   const [isClick, setIsClick] = useState<boolean>(false);
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [isBold, setIsBold] = useState<boolean>(false);
   const [isItalic, setIsItalic] = useState<boolean>(false);
   const [isUnderline, setIsUnderline] = useState<boolean>(false);
-  const [paClick, setPaClick] = useState<boolean>(false);
 
   const clickedName = useSelector(
     (state: RootState) => state.newPageClicked.name
@@ -156,10 +158,12 @@ const InputWrap = ({
       italic={isItalic}
       underline={isUnderline}
       data-id={dataId}
+      bgColor={bgColor}
     >
       <input
         type="text"
         value={value}
+        placeholder={holder}
         data-id={dataId}
         onFocus={focusHandler}
         onBlur={blurHandler}
