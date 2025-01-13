@@ -6,7 +6,7 @@ export interface InputWrapType {
   gap: string;
   holder: string;
   bgColor: string;
-  changeValue: (data: string) => void;
+  changeValue: (data: string|null) => void;
 }
 
 export interface QuestionWrapType {
@@ -22,6 +22,7 @@ export interface QuestionType {
 
 export interface QuestionDetailType {
   dataId: string;
+  clicked: boolean;
 }
 
 export interface OptionType {
@@ -29,10 +30,13 @@ export interface OptionType {
   index: number;
   moveItem: (dragIndex: number, hoverIndex: number) => void;
   dataId: string;
+  questionType: string;
 }
 
 export interface OptionWrapType {
   dataId: string;
+  questionType: string;
+  clicked: boolean;
 }
 
 export interface Option {

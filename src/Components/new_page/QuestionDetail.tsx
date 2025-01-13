@@ -3,8 +3,12 @@ import InputWrap from "./InputWrap";
 import Short from "./Short";
 import Long from "./Long";
 import OptionWrap from "./OptionWrap";
-import { useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { QuestionDetailType } from "../../types";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { useDispatch } from "react-redux";
+import { questionChange } from "../../store/surveySlice";
 
 const Container = styled.div`
   position: relative;
@@ -31,16 +35,63 @@ const Container = styled.div`
   }
 `;
 
-const QuestionDetail = ({dataId}:QuestionDetailType): JSX.Element => {
-  const [question, setQuestion] = useState<string>();
+const QuestionDetail = ({
+  dataId,
+  clicked,
+}: QuestionDetailType): JSX.Element => {
+  const [question, setQuestion] = useState<string | null>(null);
+  const [questionType, setQuestionType] = useState<string>("choice");
+  const [questionValue, setQuestionvalue] = useState<string>();
+
+  const isWriting = useSelector(
+    (state: RootState) => state.isWriting.isWriting
+  );
+  const questions = useSelector(
+    (state: RootState) => state.survey.survey.question
+  );
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (question) {
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, name: question }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    } else {
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, name: "" }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    }
+  }, [question]);
+
+  useEffect(() => {
+    const nowName = questions.find(
+      (data) => data.number === Number(dataId.match(/\d+/)?.[0])
+    )?.name;
+    if (nowName) {
+      setQuestionvalue(nowName);
+    } else {
+      setQuestionvalue("");
+    }
+  }, [questions]);
+
+  const changeHandler = (e: ChangeEvent<HTMLSelectElement>) => {
+    setQuestionType(e.target.value);
+  };
 
   return (
-    <Container data-id = {dataId}>
-      <div className="title_wrap" data-id = {dataId}>
-        <div className="input_wrap" data-id = {dataId}>
+    <Container data-id={dataId}>
+      <div className="title_wrap" data-id={dataId}>
+        <div className="input_wrap" data-id={dataId}>
           <InputWrap
             dataId={dataId}
-            value=""
+            value={isWriting ? undefined : `${questionValue}`}
             size="var(--normal-size)"
             color="var(--main-color)"
             gap="0"
@@ -49,17 +100,35 @@ const QuestionDetail = ({dataId}:QuestionDetailType): JSX.Element => {
             changeValue={(data) => setQuestion(data)}
           />
         </div>
-        <select data-id = {dataId}>
-          <option value="short" data-id = {dataId}>단답형</option>
-          <option value="long" data-id = {dataId}>장문형</option>
-          <option value="choice" data-id = {dataId}>객관식 질문</option>
-          <option value="check" data-id = {dataId}>체크박스</option>
-          <option value="drop" data-id = {dataId}>드롭다운</option>
+        <select data-id={dataId} onChange={changeHandler}>
+          <option value="short" data-id={dataId}>
+            단답형
+          </option>
+          <option value="long" data-id={dataId}>
+            장문형
+          </option>
+          <option value="choice" data-id={dataId} selected>
+            객관식 질문
+          </option>
+          <option value="check" data-id={dataId}>
+            체크박스
+          </option>
+          <option value="drop" data-id={dataId}>
+            드롭다운
+          </option>
         </select>
       </div>
-      {/* <Short data-id = {dataId} /> */}
-      {/* <Long data-id = {dataId}/> */}
-      <OptionWrap dataId={dataId}/>
+      {questionType === "short" ? (
+        <Short data-id={dataId} />
+      ) : questionType === "long" ? (
+        <Long data-id={dataId} />
+      ) : (
+        <OptionWrap
+          dataId={dataId}
+          questionType={questionType}
+          clicked={clicked}
+        />
+      )}
     </Container>
   );
 };

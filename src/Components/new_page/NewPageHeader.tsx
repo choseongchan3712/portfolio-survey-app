@@ -15,7 +15,7 @@ interface Action {
 }
 
 const Container = styled.div<Action>`
-  position: absolute;
+  position: fixed;
   z-index: 990;
   top: 0;
   left: 0;

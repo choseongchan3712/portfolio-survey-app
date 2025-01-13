@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { RootState } from "../../store/store";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import InputWrap from "./InputWrap";
 import { useDispatch } from "react-redux";
 import { wirteTitle, writeExplain } from "../../store/surveySlice";
@@ -60,9 +60,12 @@ const TitleWrap = (): JSX.Element => {
   const titleName = useSelector(
     (state: RootState) => state.survey.survey.title.detail
   );
+  const explainName = useSelector(
+    (state: RootState) => state.survey.survey.titleExplain.detail
+  );
   const [isClick, setIsClick] = useState<boolean>(false);
-  const [titleValue, setTitleValue] = useState<string>();
-  const [explainValue, setExplainValue] = useState<string>();
+  const [titleValue, setTitleValue] = useState<string | null>(null);
+  const [explainValue, setExplainValue] = useState<string | null>(null);
   const clickedName = useSelector(
     (state: RootState) => state.newPageClicked.name
   );
@@ -82,12 +85,17 @@ const TitleWrap = (): JSX.Element => {
   useEffect(() => {
     if (titleValue) {
       dispatch(wirteTitle(titleValue));
+    } else {
+      dispatch(wirteTitle("제목 없는 설문지"));
     }
   }, [titleValue]);
+  console.log(explainName);
 
   useEffect(() => {
     if (explainValue) {
       dispatch(writeExplain(explainValue));
+    } else {
+      dispatch(writeExplain(""));
     }
   }, [explainValue]);
 
@@ -105,7 +113,7 @@ const TitleWrap = (): JSX.Element => {
       />
       <InputWrap
         dataId="title"
-        value=""
+        value={isWriting ? undefined : `${explainName}`}
         size="var(--small-size)"
         color="var(--gray-4)"
         gap="0"

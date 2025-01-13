@@ -101,7 +101,7 @@ const InputWrap = ({
   const [isBold, setIsBold] = useState<boolean>(false);
   const [isItalic, setIsItalic] = useState<boolean>(false);
   const [isUnderline, setIsUnderline] = useState<boolean>(false);
-  const [change, setChange] = useState<string>();
+  const [change, setChange] = useState<string | null>(null);
 
   const clickedName = useSelector(
     (state: RootState) => state.newPageClicked.name
@@ -118,9 +118,7 @@ const InputWrap = ({
   }, [clickedName]);
 
   useEffect(() => {
-    if (change) {
-      changeValue(change);
-    }
+    changeValue(change);
   }, [change]);
 
   const focusHandler = () => {

@@ -4,9 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import QuestionDetail from "./QuestionDetail";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCopy, faGrip, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCopy,
+  faGrip,
+  faPlus,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+import { useDispatch } from "react-redux";
+import { questionChange } from "../../store/surveySlice";
 
 interface Props {
   required: boolean;
@@ -51,7 +58,7 @@ const Container = styled.div<Props>`
   }
   .bottom_wrap {
     width: 100%;
-    display: flex;
+    display: ${(props) => (props.clicked ? "flex" : "none")};
     align-items: center;
     justify-content: flex-end;
     padding: 10px 0 0 0;
@@ -165,6 +172,50 @@ const Container = styled.div<Props>`
       }
     }
   }
+  .plus_box {
+    position: absolute;
+    top: 0;
+    right: -55px;
+    width: 45px;
+    height: 200px;
+    display: ${(props) => (props.clicked ? "flex" : "none")};
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background-color: var(--box-color);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: 0.25s ease-in-out;
+    &::after {
+      content: "추가하기";
+      position: absolute;
+      right: 0;
+      font-size: 10px;
+      color: var(--box-color);
+      padding: 5px;
+      background-color: var(--gray-4);
+      border-radius: 5px;
+      transition: 0.25s ease-in-out;
+      opacity: 0;
+    }
+    &:hover {
+      background-color: var(--gray-1);
+    }
+    &:hover::after {
+      right: -50px;
+      opacity: 1;
+    }
+    .plus_button {
+      width: 30px;
+      height: 30px;
+      border-radius: 30px;
+      border: 2px solid var(--gray-4);
+      color: var(--gray-4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 `;
 const DragHandle = styled.div`
   position: absolute;
@@ -190,9 +241,15 @@ const Question = ({
   const deleteRef = useRef<SVGSVGElement>(null);
   const [isrequired, setIsrequired] = useState<boolean>(false);
   const [isClick, setIsClick] = useState<boolean>(false);
+  const [isHover, setIsHover] = useState<boolean>(false);
   const clickedName = useSelector(
     (state: RootState) => state.newPageClicked.name
   );
+  const questions = useSelector(
+    (state: RootState) => state.survey.survey.question
+  );
+
+  const dispatch = useDispatch();
 
   const [{ isDragging }, drag] = useDrag({
     type: "QUESTION",
@@ -235,6 +292,48 @@ const Question = ({
     }
   }, [clickedName]);
 
+  const onHandler = () => {
+    setIsHover(true);
+  };
+
+  const outHandler = () => {
+    setIsHover(false);
+  };
+
+  const plusHandler = () => {
+    if (questions.length === dataId) {
+      dispatch(
+        questionChange([
+          ...questions,
+          {
+            number: questions.length + 1,
+            name: "질문",
+            type: "choice",
+            option: [{ number: 1, name: "옵션1" }],
+            isRequired: false,
+          },
+        ])
+      );
+    } else {
+      const updateQuestion = [
+        ...questions.slice(0, dataId),
+        {
+          number: questions.length + 1,
+          name: "질문",
+          type: "choice",
+          option: [{ number: 1, name: "옵션1" }],
+          isRequired: false,
+        },
+        ...questions.slice(dataId),
+      ];
+      const reNumber = updateQuestion.map((data, index) => ({
+        ...data,
+        number: index + 1,
+      }));
+      dispatch(questionChange(reNumber));
+    }
+  };
+
   const copy = copyRef.current?.querySelector("path");
   copy?.setAttribute("data-id", `question_${dataId}`);
   const deletePath = deleteRef.current?.querySelector("path");
@@ -247,14 +346,17 @@ const Question = ({
       required={isrequired}
       data-id={`question_${dataId}`}
       clicked={isClick}
+      onMouseEnter={onHandler}
+      onMouseLeave={outHandler}
     >
       <FontAwesomeIcon
         icon={faGrip}
         className="drag"
         data-id={`question_${dataId}`}
+        style={{ opacity: isClick ? "1" : isHover ? "1" : "0" }}
       />
       <DragHandle ref={drag} data-id={`question_${dataId}`} />
-      <QuestionDetail dataId={`question_${dataId}`} />
+      <QuestionDetail dataId={`question_${dataId}`} clicked={isClick} />
 
       <div className="bottom_wrap" data-id={`question_${dataId}`}>
         <div className="menu_wrap" data-id={`question_${dataId}`}>
@@ -284,6 +386,15 @@ const Question = ({
               data-id={`question_${dataId}`}
             ></div>
           </div>
+        </div>
+      </div>
+      <div
+        className="plus_box"
+        onClick={plusHandler}
+        data-id={`question_${dataId}`}
+      >
+        <div className="plus_button" data-id={`question_${dataId}`}>
+          <FontAwesomeIcon icon={faPlus} data-id={`question_${dataId}`} />
         </div>
       </div>
     </Container>

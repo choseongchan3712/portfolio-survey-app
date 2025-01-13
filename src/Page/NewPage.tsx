@@ -21,6 +21,7 @@ const Container = styled.div`
     min-height: 100vh;
     height: 100%;
     padding-top: 120px;
+    padding-bottom: 50px;
     display: flex;
     align-items: flex-start;
     justify-content: center;
