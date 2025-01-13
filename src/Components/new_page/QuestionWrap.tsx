@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { useCallback, useState } from "react";
 import styled from "styled-components";
 import Question from "./Question";
 
@@ -9,22 +7,28 @@ const Container = styled.div`
 `;
 
 const QuestionWrap = (): JSX.Element => {
-  const [datas, setDatas] = useState<number[]>([1]);
+  const [datas, setDatas] = useState<number[]>([1, 2]);
 
-  const moveItem = (dragIndex: number, hoverIndex: number) => {
-    const updatedDatas = [...datas];
-    const [removed] = updatedDatas.slice(dragIndex, 1);
-    updatedDatas.splice(hoverIndex, 0, removed);
-    setDatas(updatedDatas);
-  };
+  const moveItem = useCallback((dragIndex: number, hoverIndex: number) => {
+    setDatas((prevdatas) => {
+      const updatedDatas = [...prevdatas];
+      const [removed] = updatedDatas.splice(dragIndex, 1);
+      updatedDatas.splice(hoverIndex, 0, removed);
+      return updatedDatas;
+    });
+  }, []);
 
   return (
     <Container>
-      <DndProvider backend={HTML5Backend}>
-        {datas.map((data, index) => (
-          <Question key={index} id={data} index={index} moveItem={moveItem} />
-        ))}
-      </DndProvider>
+      {datas.map((data, index) => (
+        <Question
+          key={data}
+          id={data}
+          index={index}
+          moveItem={moveItem}
+          dataId={index + 1}
+        />
+      ))}
     </Container>
   );
 };

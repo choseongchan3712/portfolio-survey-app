@@ -3,6 +3,8 @@ import InputWrap from "./InputWrap";
 import Short from "./Short";
 import Long from "./Long";
 import OptionWrap from "./OptionWrap";
+import { useState } from "react";
+import { QuestionDetailType } from "../../types";
 
 const Container = styled.div`
   position: relative;
@@ -29,32 +31,35 @@ const Container = styled.div`
   }
 `;
 
-const QuestionDetail = (): JSX.Element => {
+const QuestionDetail = ({dataId}:QuestionDetailType): JSX.Element => {
+  const [question, setQuestion] = useState<string>();
+
   return (
-    <Container>
-      <div className="title_wrap">
-        <div className="input_wrap">
+    <Container data-id = {dataId}>
+      <div className="title_wrap" data-id = {dataId}>
+        <div className="input_wrap" data-id = {dataId}>
           <InputWrap
-            dataId="question_1"
+            dataId={dataId}
             value=""
             size="var(--normal-size)"
             color="var(--main-color)"
             gap="0"
             holder="질문"
             bgColor="var(--gray-1)"
+            changeValue={(data) => setQuestion(data)}
           />
         </div>
-        <select>
-          <option value="short">단답형</option>
-          <option value="long">장문형</option>
-          <option value="choice">객관식 질문</option>
-          <option value="check">체크박스</option>
-          <option value="drop">드롭다운</option>
+        <select data-id = {dataId}>
+          <option value="short" data-id = {dataId}>단답형</option>
+          <option value="long" data-id = {dataId}>장문형</option>
+          <option value="choice" data-id = {dataId}>객관식 질문</option>
+          <option value="check" data-id = {dataId}>체크박스</option>
+          <option value="drop" data-id = {dataId}>드롭다운</option>
         </select>
       </div>
-      {/* <Short /> */}
-      {/* <Long /> */}
-      <OptionWrap />
+      {/* <Short data-id = {dataId} /> */}
+      {/* <Long data-id = {dataId}/> */}
+      <OptionWrap dataId={dataId}/>
     </Container>
   );
 };

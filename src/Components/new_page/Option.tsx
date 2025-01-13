@@ -106,7 +106,7 @@ const DragHandler = styled.div<Props>`
   opacity: ${(props) => (props.isHover ? "1" : "0")};
 `;
 
-const Option = ({ id, index, moveItem }: OptionType): JSX.Element => {
+const Option = ({ id, index, moveItem, dataId }: OptionType): JSX.Element => {
   const ref = useRef<HTMLDivElement>(null);
   const [isHover, setIsHover] = useState<boolean>(false);
 
@@ -141,22 +141,25 @@ const Option = ({ id, index, moveItem }: OptionType): JSX.Element => {
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       isHover={isHover}
+      data-id={dataId}
     >
-      <DragHandler ref={drag} isHover={isHover}>
-        <FontAwesomeIcon icon={faGripVertical} />
+      <DragHandler ref={drag} isHover={isHover} data-id={dataId}>
+        <FontAwesomeIcon icon={faGripVertical} data-id={dataId} />
       </DragHandler>
-      <div className="constents">
-        {/* <div className="choice">
-          <div className="box"></div>
-          <input type="text" value={"옵션 1"} />
+      <div className="constents" data-id={dataId}>
+        {/* <div className="choice" data-id={dataId}>
+          <div className="box" data-id={dataId}></div>
+          <input type="text" value={"옵션 1"} data-id={dataId}/>
         </div> */}
-        {/* <div className="check">
-          <div className="box"></div>
-          <input type="text" value={"옵션 1"} />
+        {/* <div className="check" data-id={dataId}>
+          <div className="box" data-id={dataId}></div>
+          <input type="text" value={"옵션 1"} data-id={dataId}/>
         </div> */}
-        <div className="drop">
-          <div className="box"></div>
-          <input type="text" value={"옵션 1"} />
+        <div className="drop" data-id={dataId}>
+          <div className="box" data-id={dataId}>
+            1
+          </div>
+          <input type="text" value={"옵션 1"} data-id={dataId} />
         </div>
       </div>
     </Container>

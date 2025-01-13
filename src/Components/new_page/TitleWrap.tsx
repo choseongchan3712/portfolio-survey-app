@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { RootState } from "../../store/store";
 import { useEffect, useState } from "react";
 import InputWrap from "./InputWrap";
+import { useDispatch } from "react-redux";
+import { wirteTitle, writeExplain } from "../../store/surveySlice";
 
 interface IsClicked {
   clicked: boolean;
@@ -55,10 +57,19 @@ const Container = styled.div<IsClicked>`
 `;
 
 const TitleWrap = (): JSX.Element => {
+  const titleName = useSelector(
+    (state: RootState) => state.survey.survey.title.detail
+  );
   const [isClick, setIsClick] = useState<boolean>(false);
+  const [titleValue, setTitleValue] = useState<string>();
+  const [explainValue, setExplainValue] = useState<string>();
   const clickedName = useSelector(
     (state: RootState) => state.newPageClicked.name
   );
+  const isWriting = useSelector(
+    (state: RootState) => state.isWriting.isWriting
+  );
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (clickedName === "title") {
@@ -68,25 +79,39 @@ const TitleWrap = (): JSX.Element => {
     }
   }, [clickedName]);
 
+  useEffect(() => {
+    if (titleValue) {
+      dispatch(wirteTitle(titleValue));
+    }
+  }, [titleValue]);
+
+  useEffect(() => {
+    if (explainValue) {
+      dispatch(writeExplain(explainValue));
+    }
+  }, [explainValue]);
+
   return (
     <Container clicked={isClick} className="new_page_title" data-id="title">
       <InputWrap
         dataId="title"
-        value="제목 없는 설문지"
+        value={isWriting ? undefined : `${titleName}`}
         size="30px"
         color="var(--main-color)"
         gap="10px"
         holder=""
         bgColor=""
+        changeValue={(data) => setTitleValue(data)}
       />
       <InputWrap
         dataId="title"
-        value="설문지 설명"
+        value=""
         size="var(--small-size)"
         color="var(--gray-4)"
         gap="0"
-        holder=""
+        holder="설문지 설명"
         bgColor=""
+        changeValue={(data) => setExplainValue(data)}
       />
     </Container>
   );

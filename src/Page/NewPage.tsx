@@ -42,7 +42,7 @@ const NewPage = (): JSX.Element => {
     if (target.dataset.id === "title") {
       dispatch(titleClicked());
     } else if (target.dataset.id?.includes("question_")) {
-      dispatch(answerClicked(`quaestion_${1}`));
+      dispatch(answerClicked(`${target.dataset.id}`));
     } else {
       dispatch(spaceClicked());
     }

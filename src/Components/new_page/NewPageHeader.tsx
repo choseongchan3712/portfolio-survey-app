@@ -1,8 +1,13 @@
 import { faEye, faPalette } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { RootState } from "../../store/store";
+import { useDispatch } from "react-redux";
+import { wirteTitle } from "../../store/surveySlice";
+import { writed, writing } from "../../store/IsWritingSlice";
 
 interface Action {
   action: boolean;
@@ -226,18 +231,37 @@ const Container = styled.div<Action>`
 `;
 
 const NewPageHeader = (): JSX.Element => {
+  const titleName = useSelector(
+    (state: RootState) => state.survey.survey.title.detail
+  );
+  const isWriting = useSelector(
+    (state: RootState) => state.isWriting.isWriting
+  );
   const [isFocus, setIsFocus] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const location = useLocation()?.pathname;
-
-  console.log(location);
+  const [title, setTitle] = useState<string>();
+  const dispatch = useDispatch();
 
   const focusHandler = () => {
     setIsFocus(true);
+    dispatch(writing());
   };
 
   const blurHandler = () => {
     setIsFocus(false);
+    dispatch(writed());
   };
+
+  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  };
+
+  useEffect(() => {
+    if (title) {
+      dispatch(wirteTitle(title));
+    }
+  }, [title]);
 
   return (
     <Container action={isFocus} pageName={location}>
@@ -252,10 +276,12 @@ const NewPageHeader = (): JSX.Element => {
           <div className="title_box">
             <input
               type="text"
-              value={"제목 없는 설문지"}
+              value={isWriting ? undefined : `${titleName}`}
               className="title"
               onFocus={focusHandler}
               onBlur={blurHandler}
+              ref={inputRef}
+              onChange={changeHandler}
             />
           </div>
         </div>

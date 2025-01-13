@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { InputWrapType } from "../../types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,6 +9,8 @@ import {
   faItalic,
   faUnderline,
 } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch } from "react-redux";
+import { writed, writing } from "../../store/IsWritingSlice";
 
 interface Props {
   clicked: boolean;
@@ -92,16 +94,20 @@ const InputWrap = ({
   gap,
   holder,
   bgColor,
+  changeValue,
 }: InputWrapType): JSX.Element => {
   const [isClick, setIsClick] = useState<boolean>(false);
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [isBold, setIsBold] = useState<boolean>(false);
   const [isItalic, setIsItalic] = useState<boolean>(false);
   const [isUnderline, setIsUnderline] = useState<boolean>(false);
+  const [change, setChange] = useState<string>();
 
   const clickedName = useSelector(
     (state: RootState) => state.newPageClicked.name
   );
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (clickedName === `${dataId}`) {
@@ -111,12 +117,20 @@ const InputWrap = ({
     }
   }, [clickedName]);
 
+  useEffect(() => {
+    if (change) {
+      changeValue(change);
+    }
+  }, [change]);
+
   const focusHandler = () => {
     setIsFocus(true);
+    dispatch(writing());
   };
 
   const blurHandler = () => {
     setIsFocus(false);
+    dispatch(writed());
   };
 
   const boldHandler = () => {
@@ -147,6 +161,10 @@ const InputWrap = ({
     e.preventDefault();
   };
 
+  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setChange(e.target.value);
+  };
+
   return (
     <Container
       clicked={isClick}
@@ -167,6 +185,7 @@ const InputWrap = ({
         data-id={dataId}
         onFocus={focusHandler}
         onBlur={blurHandler}
+        onChange={changeHandler}
       />
       <div
         className="text_menu"

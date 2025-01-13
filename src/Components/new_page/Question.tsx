@@ -1,18 +1,22 @@
 import styled from "styled-components";
 import { QuestionType } from "../../types";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import QuestionDetail from "./QuestionDetail";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy, faGrip, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
 
 interface Props {
   required: boolean;
   isDragging: boolean;
+  clicked: boolean;
 }
 
 const Container = styled.div<Props>`
   position: relative;
+  z-index: 1;
   margin-top: 20px;
   width: 100%;
   padding: 20px;
@@ -22,6 +26,22 @@ const Container = styled.div<Props>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    border-radius: 10px;
+    box-sizing: border-box;
+    transition: 0.25s ease-in-out;
+    border: ${(props) =>
+      props.clicked
+        ? "3px solid var(--sub-color)"
+        : "3px solid rgba(0, 0, 0, 0)"};
+  }
   .drag {
     position: absolute;
     top: 2px;
@@ -159,11 +179,22 @@ const DragHandle = styled.div`
   border-radius: 10px 10px 0 0;
 `;
 
-const Question = ({ id, index, moveItem }: QuestionType): JSX.Element => {
+const Question = ({
+  id,
+  index,
+  moveItem,
+  dataId,
+}: QuestionType): JSX.Element => {
   const ref = useRef<HTMLDivElement>(null);
+  const copyRef = useRef<SVGSVGElement>(null);
+  const deleteRef = useRef<SVGSVGElement>(null);
   const [isrequired, setIsrequired] = useState<boolean>(false);
+  const [isClick, setIsClick] = useState<boolean>(false);
+  const clickedName = useSelector(
+    (state: RootState) => state.newPageClicked.name
+  );
 
-  const [{ isDragging }, drag, preview] = useDrag({
+  const [{ isDragging }, drag] = useDrag({
     type: "QUESTION",
     item: { id, index },
     collect: (monitor) => ({
@@ -173,7 +204,7 @@ const Question = ({ id, index, moveItem }: QuestionType): JSX.Element => {
 
   const [, drop] = useDrop({
     accept: "QUESTION",
-    hover(item: { index: number }, monitor) {
+    hover(item: { index: number }) {
       if (!ref.current) return;
 
       const dragIndex = item.index;
@@ -186,7 +217,7 @@ const Question = ({ id, index, moveItem }: QuestionType): JSX.Element => {
     },
   });
 
-  drag(preview(ref));
+  drop(ref);
 
   const toggleHandler = () => {
     if (isrequired === false) {
@@ -196,25 +227,62 @@ const Question = ({ id, index, moveItem }: QuestionType): JSX.Element => {
     }
   };
 
-  return (
-    <Container ref={drop} isDragging={isDragging} required={isrequired}>
-      <FontAwesomeIcon icon={faGrip}  className="drag"/>
-      <DragHandle ref={drag} />
-      <QuestionDetail />
+  useEffect(() => {
+    if (clickedName === ref.current?.dataset.id) {
+      setIsClick(true);
+    } else {
+      setIsClick(false);
+    }
+  }, [clickedName]);
 
-      <div className="bottom_wrap">
-        <div className="menu_wrap">
-          <div className="copy">
-            <FontAwesomeIcon icon={faCopy} />
+  const copy = copyRef.current?.querySelector("path");
+  copy?.setAttribute("data-id", `question_${dataId}`);
+  const deletePath = deleteRef.current?.querySelector("path");
+  deletePath?.setAttribute("data-id", `question_${dataId}`);
+
+  return (
+    <Container
+      ref={ref}
+      isDragging={isDragging}
+      required={isrequired}
+      data-id={`question_${dataId}`}
+      clicked={isClick}
+    >
+      <FontAwesomeIcon
+        icon={faGrip}
+        className="drag"
+        data-id={`question_${dataId}`}
+      />
+      <DragHandle ref={drag} data-id={`question_${dataId}`} />
+      <QuestionDetail dataId={`question_${dataId}`} />
+
+      <div className="bottom_wrap" data-id={`question_${dataId}`}>
+        <div className="menu_wrap" data-id={`question_${dataId}`}>
+          <div className="copy" data-id={`question_${dataId}`}>
+            <FontAwesomeIcon
+              icon={faCopy}
+              data-id={`question_${dataId}`}
+              ref={copyRef}
+            />
           </div>
-          <div className="delete">
-            <FontAwesomeIcon icon={faTrash} />
+          <div className="delete" data-id={`question_${dataId}`}>
+            <FontAwesomeIcon
+              icon={faTrash}
+              data-id={`question_${dataId}`}
+              ref={deleteRef}
+            />
           </div>
         </div>
-        <div className="required">
-          <div className="text">필수</div>
-          <div className="toggle">
-            <div className="button" onClick={toggleHandler}></div>
+        <div className="required" data-id={`question_${dataId}`}>
+          <div className="text" data-id={`question_${dataId}`}>
+            필수
+          </div>
+          <div className="toggle" data-id={`question_${dataId}`}>
+            <div
+              className="button"
+              onClick={toggleHandler}
+              data-id={`question_${dataId}`}
+            ></div>
           </div>
         </div>
       </div>

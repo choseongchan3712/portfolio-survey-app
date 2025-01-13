@@ -5,7 +5,7 @@ interface ClickedType {
 }
 
 const initialState: ClickedType = {
-  name: "question_0",
+  name: "question_1",
 };
 
 const newPageClickedSlice = createSlice({
