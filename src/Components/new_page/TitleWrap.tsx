@@ -4,7 +4,23 @@ import { RootState } from "../../store/store";
 import { useEffect, useRef, useState } from "react";
 import InputWrap from "./InputWrap";
 import { useDispatch } from "react-redux";
-import { wirteTitle, writeExplain } from "../../store/surveySlice";
+import {
+  explainBold,
+  explainItalic,
+  explainNotBold,
+  explainNotItalic,
+  explainNotUnderLine,
+  explainUnderLine,
+  titleBold,
+  titleItalic,
+  titleNotBold,
+  titleNotItalic,
+  titleNotUnderLine,
+  titleUnderLine,
+  wirteTitle,
+  writeExplain,
+} from "../../store/surveySlice";
+import { TextStyleType } from "../../types";
 
 interface IsClicked {
   clicked: boolean;
@@ -66,6 +82,16 @@ const TitleWrap = (): JSX.Element => {
   const [isClick, setIsClick] = useState<boolean>(false);
   const [titleValue, setTitleValue] = useState<string | null>(null);
   const [explainValue, setExplainValue] = useState<string | null>(null);
+  const [titleText, setTitleText] = useState<TextStyleType>({
+    isBold: false,
+    isItalic: false,
+    isUnderLine: false,
+  });
+  const [explainText, setExplainText] = useState<TextStyleType>({
+    isBold: false,
+    isItalic: false,
+    isUnderLine: false,
+  });
   const clickedName = useSelector(
     (state: RootState) => state.newPageClicked.name
   );
@@ -89,7 +115,6 @@ const TitleWrap = (): JSX.Element => {
       dispatch(wirteTitle("제목 없는 설문지"));
     }
   }, [titleValue]);
-  console.log(explainName);
 
   useEffect(() => {
     if (explainValue) {
@@ -98,6 +123,52 @@ const TitleWrap = (): JSX.Element => {
       dispatch(writeExplain(""));
     }
   }, [explainValue]);
+
+  useEffect(() => {
+    if (titleText.isBold === true) {
+      dispatch(titleBold());
+    } else if (titleText.isBold === false) {
+      dispatch(titleNotBold());
+    }
+  }, [titleText.isBold]);
+  useEffect(() => {
+    if (titleText.isItalic === true) {
+      dispatch(titleItalic());
+    } else if (titleText.isItalic === false) {
+      dispatch(titleNotItalic());
+    }
+  }, [titleText.isItalic]);
+
+  useEffect(() => {
+    if (titleText.isUnderLine === true) {
+      dispatch(titleUnderLine());
+    } else if (titleText.isUnderLine === false) {
+      dispatch(titleNotUnderLine());
+    }
+  }, [titleText.isUnderLine]);
+
+  useEffect(() => {
+    if (explainText.isBold === true) {
+      dispatch(explainBold());
+    } else if (explainText.isBold === false) {
+      dispatch(explainNotBold());
+    }
+  }, [explainText.isBold]);
+  useEffect(() => {
+    if (explainText.isItalic === true) {
+      dispatch(explainItalic());
+    } else if (explainText.isItalic === false) {
+      dispatch(explainNotItalic());
+    }
+  }, [explainText.isItalic]);
+
+  useEffect(() => {
+    if (explainText.isUnderLine === true) {
+      dispatch(explainUnderLine());
+    } else if (explainText.isUnderLine === false) {
+      dispatch(explainNotUnderLine());
+    }
+  }, [explainText.isUnderLine]);
 
   return (
     <Container clicked={isClick} className="new_page_title" data-id="title">
@@ -110,6 +181,11 @@ const TitleWrap = (): JSX.Element => {
         holder=""
         bgColor=""
         changeValue={(data) => setTitleValue(data)}
+        isTextBold={(data) => setTitleText({ ...titleText, isBold: data })}
+        isTextItalic={(data) => setTitleText({ ...titleText, isItalic: data })}
+        isTextUnderLine={(data) =>
+          setTitleText({ ...titleText, isUnderLine: data })
+        }
       />
       <InputWrap
         dataId="title"
@@ -120,6 +196,13 @@ const TitleWrap = (): JSX.Element => {
         holder="설문지 설명"
         bgColor=""
         changeValue={(data) => setExplainValue(data)}
+        isTextBold={(data) => setExplainText({ ...explainText, isBold: data })}
+        isTextItalic={(data) =>
+          setExplainText({ ...explainText, isItalic: data })
+        }
+        isTextUnderLine={(data) =>
+          setExplainText({ ...explainText, isUnderLine: data })
+        }
       />
     </Container>
   );

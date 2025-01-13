@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { useDispatch } from "react-redux";
 import { questionChange } from "../../store/surveySlice";
+import { text } from "@fortawesome/fontawesome-svg-core";
 
 interface Props {
   required: boolean;
@@ -307,7 +308,10 @@ const Question = ({
           ...questions,
           {
             number: questions.length + 1,
-            name: "질문",
+            name: "",
+            isItalic: false,
+            isBold: false,
+            isUnderLine: false,
             type: "choice",
             option: [{ number: 1, name: "옵션1" }],
             isRequired: false,
@@ -319,7 +323,10 @@ const Question = ({
         ...questions.slice(0, dataId),
         {
           number: questions.length + 1,
-          name: "질문",
+          name: "",
+          isItalic: false,
+          isBold: false,
+          isUnderLine: false,
           type: "choice",
           option: [{ number: 1, name: "옵션1" }],
           isRequired: false,

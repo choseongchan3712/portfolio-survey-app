@@ -4,7 +4,7 @@ import Short from "./Short";
 import Long from "./Long";
 import OptionWrap from "./OptionWrap";
 import { ChangeEvent, useEffect, useState } from "react";
-import { QuestionDetailType } from "../../types";
+import { QuestionDetailType, TextStyleType } from "../../types";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { useDispatch } from "react-redux";
@@ -42,6 +42,11 @@ const QuestionDetail = ({
   const [question, setQuestion] = useState<string | null>(null);
   const [questionType, setQuestionType] = useState<string>("choice");
   const [questionValue, setQuestionvalue] = useState<string>();
+  const [textStyle, setTextStyle] = useState<TextStyleType>({
+    isBold: false,
+    isItalic: false,
+    isUnderLine: false,
+  });
 
   const isWriting = useSelector(
     (state: RootState) => state.isWriting.isWriting
@@ -85,6 +90,78 @@ const QuestionDetail = ({
     setQuestionType(e.target.value);
   };
 
+  useEffect(() => {
+    if (questionType === "short" || questionType === "long") {
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, type: questionType, option: [] }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    } else {
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, type: questionType }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    }
+  }, [questionType]);
+
+  useEffect(() => {
+    if (textStyle.isBold === true) {
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, isBold: true }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    } else if (textStyle.isBold === false) {
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, isBold: false }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    }
+  }, [textStyle.isBold]);
+
+  useEffect(() => {
+    if (textStyle.isItalic === true) {
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, isItalic: true }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    } else if (textStyle.isItalic === false) {
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, isItalic: false }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    }
+  }, [textStyle.isItalic]);
+
+  useEffect(() => {
+    if (textStyle.isUnderLine === true) {
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, isUnderLine: true }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    } else if (textStyle.isUnderLine === false) {
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, isUnderLine: false }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    }
+  }, [textStyle.isUnderLine]);
+
   return (
     <Container data-id={dataId}>
       <div className="title_wrap" data-id={dataId}>
@@ -98,6 +175,13 @@ const QuestionDetail = ({
             holder="질문"
             bgColor="var(--gray-1)"
             changeValue={(data) => setQuestion(data)}
+            isTextBold={(data) => setTextStyle({ ...textStyle, isBold: data })}
+            isTextItalic={(data) =>
+              setTextStyle({ ...textStyle, isItalic: data })
+            }
+            isTextUnderLine={(data) =>
+              setTextStyle({ ...textStyle, isUnderLine: data })
+            }
           />
         </div>
         <select data-id={dataId} onChange={changeHandler}>

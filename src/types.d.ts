@@ -6,7 +6,10 @@ export interface InputWrapType {
   gap: string;
   holder: string;
   bgColor: string;
-  changeValue: (data: string|null) => void;
+  changeValue: (data: string | null) => void;
+  isTextBold: (data: boolean) => void;
+  isTextItalic: (data: boolean) => void;
+  isTextUnderLine: (data: boolean) => void;
 }
 
 export interface QuestionWrapType {
@@ -40,13 +43,16 @@ export interface OptionWrapType {
 }
 
 export interface Option {
-  number: number;
-  name: string;
+  number?: number;
+  name?: string;
 }
 
 export interface Question {
   number: number;
   name: string;
+  isItalic: boolean;
+  isBold: boolean;
+  isUnderLine: boolean;
   type: string;
   option?: Option[];
   isRequired: boolean;
@@ -56,12 +62,22 @@ export interface NewPageType {
   survey: {
     title: {
       detail: string;
-      text: string;
+      isItalic: boolean;
+      isBold: boolean;
+      isUnderLine: boolean;
     };
     titleExplain: {
       detail: string;
-      text: string;
+      isItalic: boolean;
+      isBold: boolean;
+      isUnderLine: boolean;
     };
     question: Question[];
   };
+}
+
+export interface TextStyleType {
+  isBold: boolean;
+  isItalic: boolean;
+  isUnderLine: boolean;
 }

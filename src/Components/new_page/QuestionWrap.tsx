@@ -17,7 +17,10 @@ const QuestionWrap = (): JSX.Element => {
   );
 
   const survey = useSelector((state: RootState) => state.survey.survey);
-  console.log(survey);
+
+  useEffect(() => {
+    console.log(survey);
+  }, [survey]);
 
   const [questionCount, setQuestionCount] = useState<number[]>([1]);
 
