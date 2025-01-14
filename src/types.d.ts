@@ -55,6 +55,7 @@ export interface Question {
   isBold: boolean;
   isUnderLine: boolean;
   type: string;
+  isOther: boolean;
   option?: Option[];
   isRequired: boolean;
 }

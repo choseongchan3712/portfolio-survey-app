@@ -3,7 +3,7 @@ import { useDrag, useDrop } from "react-dnd";
 import styled from "styled-components";
 import { OptionType } from "../../types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGripVertical } from "@fortawesome/free-solid-svg-icons";
+import { faGripVertical, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import { useDispatch } from "react-redux";
@@ -12,6 +12,10 @@ import { writed, writing } from "../../store/IsWritingSlice";
 
 interface Props {
   isHover: boolean;
+}
+
+interface DeleteProps {
+  isDelete: boolean;
 }
 
 const Container = styled.div<Props>`
@@ -33,7 +37,7 @@ const Container = styled.div<Props>`
         margin-right: 10px;
       }
       input {
-        width: 70%;
+        width: 90%;
         padding: 5px 0;
         color: var(--main-color);
         font-size: var(--normal-size);
@@ -82,7 +86,7 @@ const Container = styled.div<Props>`
         margin-right: 10px;
       }
       input {
-        width: 70%;
+        width: 80%;
         padding: 5px 0;
         color: var(--main-color);
         font-size: var(--normal-size);
@@ -111,6 +115,23 @@ const DragHandler = styled.div<Props>`
   opacity: ${(props) => (props.isHover ? "1" : "0")};
 `;
 
+const DeleteBox = styled.div<DeleteProps>`
+  position: absolute;
+  right: 0;
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  border-radius: 35px;
+  display: ${(props) => (props.isDelete ? "flex" : "none")};
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-3);
+  font-size: 20px;
+  &:hover {
+    background-color: var(--gray-1);
+  }
+`;
+
 const Option = ({
   id,
   index,
@@ -121,6 +142,7 @@ const Option = ({
 }: OptionType): JSX.Element => {
   const ref = useRef<HTMLDivElement>(null);
   const [isHover, setIsHover] = useState<boolean>(false);
+  const [isDelete, setIsDelete] = useState<boolean>(false);
   const [option, setOption] = useState<string | null>(null);
   const [optionValue, setOptionValue] = useState<string>();
   const dispatch = useDispatch();
@@ -171,6 +193,11 @@ const Option = ({
     } else {
       setOptionValue(`옵션${dataSubid}`);
     }
+    if (options && options?.length >= 2) {
+      setIsDelete(true);
+    } else {
+      setIsDelete(false);
+    }
   }, [options]);
 
   const [{ isDragging }, drag] = useDrag({
@@ -198,6 +225,9 @@ const Option = ({
 
   drop(ref);
 
+  const path = ref.current?.querySelectorAll("path");
+  path?.forEach((data) => data.setAttribute("data-id", `${dataId}`));
+
   const changeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     setOption(e.target.value);
   };
@@ -208,6 +238,20 @@ const Option = ({
 
   const blurHandler = () => {
     dispatch(writed());
+  };
+
+  const deleteHandler = () => {
+    const updataOptions = options?.filter((data) => data.number !== dataSubid);
+    const reNumberOptions = updataOptions?.map((data, index) => ({
+      ...data,
+      number: index + 1,
+    }));
+    const updatedQuestions = questions.map((data) =>
+      data.number === Number(dataId.match(/\d+/)?.[0])
+        ? { ...data, option: reNumberOptions }
+        : data
+    );
+    dispatch(questionChange(updatedQuestions));
   };
 
   return (
@@ -234,6 +278,9 @@ const Option = ({
               onBlur={blurHandler}
               value={isWriting ? undefined : `${optionValue}`}
             />
+            <DeleteBox isDelete={isDelete} onClick={deleteHandler}>
+              <FontAwesomeIcon icon={faXmark} data-id={dataId} />
+            </DeleteBox>
           </div>
         ) : questionType === "check" ? (
           <div className="check" data-id={dataId}>
@@ -246,11 +293,14 @@ const Option = ({
               onBlur={blurHandler}
               value={isWriting ? undefined : `${optionValue}`}
             />
+            <DeleteBox isDelete={isDelete} onClick={deleteHandler}>
+              <FontAwesomeIcon icon={faXmark} data-id={dataId} />
+            </DeleteBox>
           </div>
         ) : questionType === "drop" ? (
           <div className="drop" data-id={dataId}>
             <div className="box" data-id={dataId}>
-              1
+              {`${dataSubid}`}
             </div>
             <input
               type="text"
@@ -260,6 +310,9 @@ const Option = ({
               onBlur={blurHandler}
               value={isWriting ? undefined : `${optionValue}`}
             />
+            <DeleteBox isDelete={isDelete} onClick={deleteHandler}>
+              <FontAwesomeIcon icon={faXmark} data-id={dataId} />
+            </DeleteBox>
           </div>
         ) : null}
       </div>

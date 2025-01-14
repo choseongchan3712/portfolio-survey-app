@@ -91,17 +91,44 @@ const QuestionDetail = ({
   };
 
   useEffect(() => {
-    if (questionType === "short" || questionType === "long") {
+    if (questionType === "short") {
       const updatedQuestions = questions.map((data) =>
         data.number === Number(dataId.match(/\d+/)?.[0])
           ? { ...data, type: questionType, option: [] }
           : data
       );
       dispatch(questionChange(updatedQuestions));
-    } else {
+    }
+    if (questionType === "long") {
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, type: questionType, option: [] }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    }
+    if (questionType === "choice") {
       const updatedQuestions = questions.map((data) =>
         data.number === Number(dataId.match(/\d+/)?.[0])
           ? { ...data, type: questionType }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    }
+
+    if (questionType === "check") {
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, type: questionType }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    }
+
+    if (questionType === "drop") {
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, isOther: false, type: questionType }
           : data
       );
       dispatch(questionChange(updatedQuestions));
