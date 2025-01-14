@@ -23,7 +23,7 @@ const initialState: NewPageType = {
         isBold: false,
         isUnderLine: false,
         type: "choice",
-        option: [{ number: 1, name: "옵션1" }],
+        option: [{ number: 1, name: "" }],
         isRequired: false,
       },
     ],
@@ -89,6 +89,37 @@ const surverySlice = createSlice({
         number: index + 1,
       }));
     },
+    reorderOption: (state, action) => {
+      const { dragIndex, hoverIndex, dataId } = action.payload;
+
+      const matchedId = dataId.match(/\d+/);
+      if (!matchedId) return;
+
+      const questionNumber = Number(matchedId[0]);
+      const question = state.survey.question.find(
+        (data) => data.number === questionNumber
+      );
+      if (!question || !question.option) return;
+
+      const updatedOptions = [...question.option];
+
+      if (
+        dragIndex < 0 ||
+        dragIndex >= updatedOptions.length ||
+        hoverIndex < 0 ||
+        hoverIndex >= updatedOptions.length
+      ) {
+        return;
+      }
+
+      const [removed] = updatedOptions.splice(dragIndex, 1);
+      updatedOptions.splice(hoverIndex, 0, removed);
+
+      question.option = updatedOptions.map((option, index) => ({
+        ...option,
+        number: index + 1,
+      }));
+    },
   },
 });
 
@@ -109,5 +140,6 @@ export const {
   explainNotUnderLine,
   questionChange,
   reorderQuestion,
+  reorderOption,
 } = surverySlice.actions;
 export default surverySlice.reducer;

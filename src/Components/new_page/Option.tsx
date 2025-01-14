@@ -1,9 +1,14 @@
-import { useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import styled from "styled-components";
 import { OptionType } from "../../types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGripVertical } from "@fortawesome/free-solid-svg-icons";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { useDispatch } from "react-redux";
+import { questionChange } from "../../store/surveySlice";
+import { writed, writing } from "../../store/IsWritingSlice";
 
 interface Props {
   isHover: boolean;
@@ -112,11 +117,63 @@ const Option = ({
   moveItem,
   dataId,
   questionType,
+  dataSubid,
 }: OptionType): JSX.Element => {
   const ref = useRef<HTMLDivElement>(null);
   const [isHover, setIsHover] = useState<boolean>(false);
+  const [option, setOption] = useState<string | null>(null);
+  const [optionValue, setOptionValue] = useState<string>();
+  const dispatch = useDispatch();
 
-  const [{ isDragging }, drag, preview] = useDrag({
+  const isWriting = useSelector(
+    (state: RootState) => state.isWriting.isWriting
+  );
+
+  const options = useSelector(
+    (state: RootState) =>
+      state.survey.survey.question.find(
+        (data) => data.number === Number(dataId.match(/\d+/)?.[0])
+      )?.option
+  );
+
+  const questions = useSelector(
+    (state: RootState) => state.survey.survey.question
+  );
+
+  useEffect(() => {
+    if (option) {
+      const updataOptions = options?.map((data) =>
+        data.number === dataSubid ? { ...data, name: option } : data
+      );
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, option: updataOptions }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    } else {
+      const updataOptions = options?.map((data) =>
+        data.number === dataSubid ? { ...data, name: `옵션${dataSubid}` } : data
+      );
+      const updatedQuestions = questions.map((data) =>
+        data.number === Number(dataId.match(/\d+/)?.[0])
+          ? { ...data, option: updataOptions }
+          : data
+      );
+      dispatch(questionChange(updatedQuestions));
+    }
+  }, [option]);
+
+  useEffect(() => {
+    const nowName = options?.find((data) => data.number === dataSubid)?.name;
+    if (nowName) {
+      setOptionValue(nowName);
+    } else {
+      setOptionValue(`옵션${dataSubid}`);
+    }
+  }, [options]);
+
+  const [{ isDragging }, drag] = useDrag({
     type: "OPTION",
     item: { id, index },
     collect: (monitor) => ({
@@ -126,7 +183,7 @@ const Option = ({
 
   const [, drop] = useDrop({
     accept: "OPTION",
-    hover(item: { index: number }, monitor) {
+    hover(item: { index: number }) {
       if (!ref.current) return;
 
       const dragIndex = item.index;
@@ -139,15 +196,28 @@ const Option = ({
     },
   });
 
-  drag(preview(ref));
+  drop(ref);
+
+  const changeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    setOption(e.target.value);
+  };
+
+  const focusHandler = () => {
+    dispatch(writing());
+  };
+
+  const blurHandler = () => {
+    dispatch(writed());
+  };
 
   return (
     <Container
-      ref={drop}
+      ref={ref}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       isHover={isHover}
       data-id={dataId}
+      data-subid={dataSubid}
     >
       <DragHandler ref={drag} isHover={isHover} data-id={dataId}>
         <FontAwesomeIcon icon={faGripVertical} data-id={dataId} />
@@ -156,19 +226,40 @@ const Option = ({
         {questionType === "choice" ? (
           <div className="choice" data-id={dataId}>
             <div className="box" data-id={dataId}></div>
-            <input type="text" value={"옵션 1"} data-id={dataId} />
+            <input
+              type="text"
+              data-id={dataId}
+              onChange={changeHandler}
+              onFocus={focusHandler}
+              onBlur={blurHandler}
+              value={isWriting ? undefined : `${optionValue}`}
+            />
           </div>
         ) : questionType === "check" ? (
           <div className="check" data-id={dataId}>
             <div className="box" data-id={dataId}></div>
-            <input type="text" value={"옵션 1"} data-id={dataId} />
+            <input
+              type="text"
+              data-id={dataId}
+              onChange={changeHandler}
+              onFocus={focusHandler}
+              onBlur={blurHandler}
+              value={isWriting ? undefined : `${optionValue}`}
+            />
           </div>
         ) : questionType === "drop" ? (
           <div className="drop" data-id={dataId}>
             <div className="box" data-id={dataId}>
               1
             </div>
-            <input type="text" value={"옵션 1"} data-id={dataId} />
+            <input
+              type="text"
+              data-id={dataId}
+              onChange={changeHandler}
+              onFocus={focusHandler}
+              onBlur={blurHandler}
+              value={isWriting ? undefined : `${optionValue}`}
+            />
           </div>
         ) : null}
       </div>

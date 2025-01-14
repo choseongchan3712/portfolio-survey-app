@@ -34,6 +34,7 @@ export interface OptionType {
   moveItem: (dragIndex: number, hoverIndex: number) => void;
   dataId: string;
   questionType: string;
+  dataSubid: number;
 }
 
 export interface OptionWrapType {

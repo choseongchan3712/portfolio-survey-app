@@ -1,17 +1,21 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import Option from "./Option";
 import { OptionWrapType } from "../../types";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { useDispatch } from "react-redux";
+import { reorderOption } from "../../store/surveySlice";
 
 interface Props {
-  clicked:boolean;
+  clicked: boolean;
 }
 
 const Container = styled.div<Props>`
   width: 100%;
   .plus_wrap {
     width: 100%;
-    display: ${(props)=>(props.clicked ? "flex" : "none")};
+    display: ${(props) => (props.clicked ? "flex" : "none")};
     align-items: center;
     padding: 15px 0;
     .box {
@@ -52,19 +56,43 @@ const Container = styled.div<Props>`
   }
 `;
 
-const OptionWrap = ({ dataId, questionType, clicked }: OptionWrapType): JSX.Element => {
-  const [datas, setDatas] = useState<number[]>([1]);
+const OptionWrap = ({
+  dataId,
+  questionType,
+  clicked,
+}: OptionWrapType): JSX.Element => {
+  const dispatch = useDispatch();
+  const option = useSelector(
+    (state: RootState) =>
+      state.survey.survey.question.find(
+        (data) => data.number === Number(dataId.match(/\d+/)?.[0])
+      )?.option
+  );
 
-  const moveItem = (dragIndex: number, hoverIndex: number) => {
-    const updataDatas = [...datas];
-    const [removed] = updataDatas.slice(dragIndex, 1);
-    updataDatas.splice(hoverIndex, 0, removed);
-    setDatas(updataDatas);
-  };
+  const [optionCount, setOptionCount] = useState<number[]>([1]);
+
+  useEffect(() => {
+    if (option) {
+      setOptionCount(option.map((data) => data.number ?? 0));
+    }
+  }, [option]);
+
+  const moveItem = useCallback(
+    (dragIndex: number, hoverIndex: number) => {
+      setOptionCount((prevDatas) => {
+        const updatedDatas = [...prevDatas];
+        const [removed] = updatedDatas.splice(dragIndex, 1);
+        updatedDatas.splice(hoverIndex, 0, removed);
+        return updatedDatas;
+      });
+      dispatch(reorderOption({ dragIndex, hoverIndex, dataId }));
+    },
+    [dispatch, dataId]
+  );
 
   return (
     <Container data-id={dataId} clicked={clicked}>
-      {datas.map((data, index) => (
+      {optionCount.map((data, index) => (
         <Option
           key={index}
           id={data}
@@ -72,14 +100,21 @@ const OptionWrap = ({ dataId, questionType, clicked }: OptionWrapType): JSX.Elem
           moveItem={moveItem}
           dataId={dataId}
           questionType={questionType}
+          dataSubid={index + 1}
         />
       ))}
       <div className="plus_wrap" data-id={dataId}>
         <div className="box" data-id={dataId}></div>
         <div className="plus_contents" data-id={dataId}>
-          <div className="plus" data-id={dataId}>옵션 추가</div>
-          <div className="and" data-id={dataId}>또는</div>
-          <div className="other" data-id={dataId}>'기타' 추가</div>
+          <div className="plus" data-id={dataId}>
+            옵션 추가
+          </div>
+          <div className="and" data-id={dataId}>
+            또는
+          </div>
+          <div className="other" data-id={dataId}>
+            '기타' 추가
+          </div>
         </div>
       </div>
     </Container>
