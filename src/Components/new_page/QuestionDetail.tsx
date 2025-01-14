@@ -54,6 +54,12 @@ const QuestionDetail = ({
   const questions = useSelector(
     (state: RootState) => state.survey.survey.question
   );
+  const type = useSelector(
+    (state: RootState) =>
+      state.survey.survey.question.find(
+        (data) => data.number === Number(dataId.match(/\d+/)?.[0])
+      )?.type
+  );
 
   const dispatch = useDispatch();
 
@@ -211,14 +217,14 @@ const QuestionDetail = ({
             }
           />
         </div>
-        <select data-id={dataId} onChange={changeHandler}>
+        <select data-id={dataId} onChange={changeHandler} value={type}>
           <option value="short" data-id={dataId}>
             단답형
           </option>
           <option value="long" data-id={dataId}>
             장문형
           </option>
-          <option value="choice" data-id={dataId} selected>
+          <option value="choice" data-id={dataId}>
             객관식 질문
           </option>
           <option value="check" data-id={dataId}>
@@ -229,9 +235,9 @@ const QuestionDetail = ({
           </option>
         </select>
       </div>
-      {questionType === "short" ? (
+      {type === "short" ? (
         <Short data-id={dataId} />
-      ) : questionType === "long" ? (
+      ) : type === "long" ? (
         <Long data-id={dataId} />
       ) : (
         <OptionWrap

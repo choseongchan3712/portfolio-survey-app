@@ -147,6 +147,13 @@ const Option = ({
   const [optionValue, setOptionValue] = useState<string>();
   const dispatch = useDispatch();
 
+  const type = useSelector(
+    (state: RootState) =>
+      state.survey.survey.question.find(
+        (data) => data.number === Number(dataId.match(/\d+/)?.[0])
+      )?.type
+  );
+
   const isWriting = useSelector(
     (state: RootState) => state.isWriting.isWriting
   );
@@ -267,7 +274,7 @@ const Option = ({
         <FontAwesomeIcon icon={faGripVertical} data-id={dataId} />
       </DragHandler>
       <div className="constents" data-id={dataId}>
-        {questionType === "choice" ? (
+        {type === "choice" ? (
           <div className="choice" data-id={dataId}>
             <div className="box" data-id={dataId}></div>
             <input
@@ -282,7 +289,7 @@ const Option = ({
               <FontAwesomeIcon icon={faXmark} data-id={dataId} />
             </DeleteBox>
           </div>
-        ) : questionType === "check" ? (
+        ) : type === "check" ? (
           <div className="check" data-id={dataId}>
             <div className="box" data-id={dataId}></div>
             <input
@@ -297,7 +304,7 @@ const Option = ({
               <FontAwesomeIcon icon={faXmark} data-id={dataId} />
             </DeleteBox>
           </div>
-        ) : questionType === "drop" ? (
+        ) : type === "drop" ? (
           <div className="drop" data-id={dataId}>
             <div className="box" data-id={dataId}>
               {`${dataSubid}`}

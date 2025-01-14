@@ -20,6 +20,7 @@ interface Props {
   required: boolean;
   isDragging: boolean;
   clicked: boolean;
+  questionsCount: number;
 }
 
 const Container = styled.div<Props>`
@@ -113,6 +114,14 @@ const Container = styled.div<Props>`
       }
       .delete {
         margin-right: 10px;
+        color: ${(props) =>
+          props.questionsCount === 1 ? "var(--gray-2)" : "var(---gray-4)"};
+        cursor: ${(props) =>
+          props.questionsCount === 1 ? "unset" : "pointer"};
+        &:hover {
+          background-color: ${(props) =>
+            props.questionsCount === 1 ? "unset" : "var(--gray-1)"};
+        }
         &::after {
           content: "삭제하기";
           position: absolute;
@@ -132,7 +141,7 @@ const Container = styled.div<Props>`
           opacity: 0;
         }
         &:hover::after {
-          opacity: 1;
+          opacity: ${(props) => (props.questionsCount === 1 ? "0" : "1")};
           bottom: -23px;
         }
       }
@@ -240,7 +249,6 @@ const Question = ({
   const ref = useRef<HTMLDivElement>(null);
   const copyRef = useRef<SVGSVGElement>(null);
   const deleteRef = useRef<SVGSVGElement>(null);
-  const [isrequired, setIsrequired] = useState<boolean>(false);
   const [isClick, setIsClick] = useState<boolean>(false);
   const [isHover, setIsHover] = useState<boolean>(false);
   const clickedName = useSelector(
@@ -248,6 +256,11 @@ const Question = ({
   );
   const questions = useSelector(
     (state: RootState) => state.survey.survey.question
+  );
+  const type = useSelector(
+    (state: RootState) =>
+      state.survey.survey.question.find((data) => data.number === dataId)
+        ?.isRequired
   );
 
   const dispatch = useDispatch();
@@ -278,10 +291,16 @@ const Question = ({
   drop(ref);
 
   const toggleHandler = () => {
-    if (isrequired === false) {
-      setIsrequired(true);
+    if (type === false) {
+      const updateQuestion = questions.map((data) =>
+        data.number === dataId ? { ...data, isRequired: true } : data
+      );
+      dispatch(questionChange(updateQuestion));
     } else {
-      setIsrequired(false);
+      const updateQuestion = questions.map((data) =>
+        data.number === dataId ? { ...data, isRequired: false } : data
+      );
+      dispatch(questionChange(updateQuestion));
     }
   };
 
@@ -343,6 +362,46 @@ const Question = ({
     }
   };
 
+  const deleteHandler = () => {
+    if (questions.length !== 1) {
+      const updataQuestion = questions.filter((data) => data.number !== dataId);
+      const reNumberQuestion = updataQuestion.map((data, index) => ({
+        ...data,
+        number: index + 1,
+      }));
+      dispatch(questionChange(reNumberQuestion));
+    }
+  };
+
+  const copyHandler = () => {
+    const copyQuestion = questions.find((data) => data.number === dataId);
+    console.log(copyQuestion);
+    if (questions.length === dataId && copyQuestion) {
+      const newQuestions = [
+        ...questions,
+        {
+          ...copyQuestion,
+          number: questions.length + 1,
+        },
+      ];
+      dispatch(questionChange(newQuestions));
+    } else if (questions.length !== dataId && copyQuestion) {
+      const newQuestions = [
+        ...questions.slice(0, dataId),
+        {
+          ...copyQuestion,
+          number: questions.length + 1,
+        },
+        ...questions.slice(dataId),
+      ];
+      const reNumber = newQuestions.map((data, index) => ({
+        ...data,
+        number: index + 1,
+      }));
+      dispatch(questionChange(reNumber));
+    }
+  };
+
   const copy = copyRef.current?.querySelector("path");
   copy?.setAttribute("data-id", `question_${dataId}`);
   const deletePath = deleteRef.current?.querySelector("path");
@@ -352,11 +411,12 @@ const Question = ({
     <Container
       ref={ref}
       isDragging={isDragging}
-      required={isrequired}
+      required={type!}
       data-id={`question_${dataId}`}
       clicked={isClick}
       onMouseEnter={onHandler}
       onMouseLeave={outHandler}
+      questionsCount={questions.length}
     >
       <FontAwesomeIcon
         icon={faGrip}
@@ -369,14 +429,22 @@ const Question = ({
 
       <div className="bottom_wrap" data-id={`question_${dataId}`}>
         <div className="menu_wrap" data-id={`question_${dataId}`}>
-          <div className="copy" data-id={`question_${dataId}`}>
+          <div
+            className="copy"
+            data-id={`question_${dataId}`}
+            onClick={copyHandler}
+          >
             <FontAwesomeIcon
               icon={faCopy}
               data-id={`question_${dataId}`}
               ref={copyRef}
             />
           </div>
-          <div className="delete" data-id={`question_${dataId}`}>
+          <div
+            className="delete"
+            data-id={`question_${dataId}`}
+            onClick={deleteHandler}
+          >
             <FontAwesomeIcon
               icon={faTrash}
               data-id={`question_${dataId}`}
