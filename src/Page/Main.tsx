@@ -2,6 +2,10 @@ import styled from "styled-components";
 import MainHeader from "../Components/main/MainHeader";
 import NewPageWrap from "../Components/main/NewPageWrap";
 import SavedPageWrap from "../Components/main/SavedPageWrap";
+import { useEffect } from "react";
+import { NewPageType } from "../types";
+import { useDispatch } from "react-redux";
+import { pushSurvey } from "../store/surveySlice";
 
 const Container = styled.div`
   position: relative;
@@ -24,6 +28,42 @@ const Container = styled.div`
 `;
 
 const Main = (): JSX.Element => {
+  const dispatch = useDispatch();
+  const initialState: NewPageType = {
+    survey: {
+      title: {
+        detail: "제목 없는 설문지",
+        isItalic: false,
+        isBold: false,
+        isUnderLine: false,
+      },
+      titleExplain: {
+        detail: "",
+        isItalic: false,
+        isBold: false,
+        isUnderLine: false,
+      },
+      question: [
+        {
+          number: 1,
+          name: "",
+          isItalic: false,
+          isBold: false,
+          isUnderLine: false,
+          type: "choice",
+          option: [{ number: 1, name: "옵션1" }],
+          isOther: false,
+          isRequired: false,
+        },
+      ],
+    },
+  };
+  useEffect(() => {
+    sessionStorage.removeItem("reload");
+    localStorage.setItem("new_survey", JSON.stringify(initialState));
+    dispatch(pushSurvey(initialState));
+  }, []);
+
   return (
     <Container>
       <MainHeader />

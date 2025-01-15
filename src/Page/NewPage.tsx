@@ -8,6 +8,12 @@ import {
   titleClicked,
 } from "../store/newPageClickedSlice";
 import QuestionWrap from "../Components/new_page/QuestionWrap";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { useEffect, useState } from "react";
+import { NewPageType } from "../types";
+import { pushSurvey } from "../store/surveySlice";
+import { useLocation, useNavigationType, useParams } from "react-router-dom";
 
 const Container = styled.div`
   position: relative;
@@ -36,6 +42,108 @@ const Container = styled.div`
 
 const NewPage = (): JSX.Element => {
   const dispatch = useDispatch();
+  const survey = useSelector((state: RootState) => state.survey);
+  const [isReload, setIsReload] = useState<boolean>();
+  const id = useParams().id;
+  const initialState: NewPageType = {
+    survey: {
+      title: {
+        detail: "제목 없는 설문지",
+        isItalic: false,
+        isBold: false,
+        isUnderLine: false,
+      },
+      titleExplain: {
+        detail: "",
+        isItalic: false,
+        isBold: false,
+        isUnderLine: false,
+      },
+      question: [
+        {
+          number: 1,
+          name: "",
+          isItalic: false,
+          isBold: false,
+          isUnderLine: false,
+          type: "choice",
+          option: [{ number: 1, name: "옵션1" }],
+          isOther: false,
+          isRequired: false,
+        },
+      ],
+    },
+  };
+
+  useEffect(() => {
+    if (id === "new") {
+      const saved = localStorage.getItem("new_survey");
+      if (saved) {
+        dispatch(pushSurvey(JSON.parse(saved)));
+      }
+    }
+
+    if (!sessionStorage.getItem("reload")) {
+      setIsReload(false);
+
+      console.log("false");
+    } else if (sessionStorage.getItem("reload")) {
+      setIsReload(true);
+      console.log("true");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isReload === false) {
+      const saved = localStorage.getItem("saved_survey");
+      if (!saved) {
+        localStorage.setItem(
+          "saved_survey",
+          JSON.stringify([{ survey, id: 1 }])
+        );
+      } else if (saved) {
+        localStorage.setItem(
+          "saved_survey",
+          JSON.stringify([
+            ...JSON.parse(saved),
+            { survey, id: JSON.parse(saved).length + 1 },
+          ])
+        );
+      }
+      sessionStorage.setItem("reload", "true");
+    }
+  }, [isReload]);
+
+  useEffect(() => {
+    if (id === "new") {
+      if (JSON.stringify(survey) !== JSON.stringify(initialState)) {
+        localStorage.setItem("new_survey", JSON.stringify(survey));
+      }
+
+      const saved = localStorage.getItem("saved_survey");
+
+      if (isReload === true) {
+        if (!saved) {
+          localStorage.setItem(
+            "saved_survey",
+            JSON.stringify([{ survey, id: 1 }])
+          );
+        } else if (saved) {
+          const updateData = JSON.parse(saved).map((data: any) =>
+            data.id === JSON.parse(saved).length ? { ...data, survey } : data
+          );
+          localStorage.setItem("saved_survey", JSON.stringify(updateData));
+        }
+      } else if (isReload === false) {
+        if (saved && JSON.stringify(survey) !== JSON.stringify(initialState)) {
+          const updateData = JSON.parse(saved).map((data: any) =>
+            data.id === JSON.parse(saved).length ? { ...data, survey } : data
+          );
+          localStorage.setItem("saved_survey", JSON.stringify(updateData));
+        }
+      }
+    }
+  }, [survey]);
 
   const clickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
@@ -47,8 +155,6 @@ const NewPage = (): JSX.Element => {
     } else {
       dispatch(spaceClicked());
     }
-
-    console.log(target.dataset.id);
   };
 
   return (

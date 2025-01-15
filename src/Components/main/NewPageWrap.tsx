@@ -49,7 +49,7 @@ const NewPageWrap = (): JSX.Element => {
     <Container>
       <div className="contents">
         <div className="title">새 설문지 작성</div>
-        <Link to={"/new_page"}>
+        <Link to={"/new_page/new"}>
           <FontAwesomeIcon icon={faPlus} />
         </Link>
       </div>

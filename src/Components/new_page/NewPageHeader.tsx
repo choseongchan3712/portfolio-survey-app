@@ -2,7 +2,7 @@ import { faEye, faPalette } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { RootState } from "../../store/store";
 import { useDispatch } from "react-redux";
@@ -96,6 +96,19 @@ const Container = styled.div<Action>`
         align-items: center;
         div {
           position: relative;
+          padding: 10px;
+          font-size: 20px;
+          border-radius: 50px;
+          transition: 0.25s ease-in-out;
+          cursor: pointer;
+          color: var(--gray-4);
+          &:hover {
+            background-color: var(--gray-1);
+          }
+        }
+        a {
+          position: relative;
+          text-decoration: none;
           padding: 10px;
           font-size: 20px;
           border-radius: 50px;
@@ -242,6 +255,8 @@ const NewPageHeader = (): JSX.Element => {
   const location = useLocation()?.pathname;
   const [title, setTitle] = useState<string>();
   const dispatch = useDispatch();
+  const id = useParams().id;
+  const savedCount = JSON.parse(localStorage.getItem("saved_survey")!).length;
 
   const focusHandler = () => {
     setIsFocus(true);
@@ -291,9 +306,12 @@ const NewPageHeader = (): JSX.Element => {
             <div className="theme">
               <FontAwesomeIcon icon={faPalette} />
             </div>
-            <div className="preview">
+            <Link
+              to={id === "new" ? `preview/${savedCount}` : `/`}
+              className="preview"
+            >
               <FontAwesomeIcon icon={faEye} />
-            </div>
+            </Link>
           </div>
           <div className="submit">게시</div>
         </div>

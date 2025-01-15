@@ -35,6 +35,9 @@ const surverySlice = createSlice({
   name: "survey",
   initialState,
   reducers: {
+    pushSurvey: (_, action: PayloadAction<NewPageType>) => {
+      return action.payload;
+    },
     wirteTitle: (state, action: PayloadAction<string>) => {
       state.survey.title.detail = action.payload;
     },
@@ -125,6 +128,7 @@ const surverySlice = createSlice({
 });
 
 export const {
+  pushSurvey,
   wirteTitle,
   titleBold,
   titleNotBold,
