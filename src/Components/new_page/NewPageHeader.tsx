@@ -256,7 +256,13 @@ const NewPageHeader = (): JSX.Element => {
   const [title, setTitle] = useState<string>();
   const dispatch = useDispatch();
   const id = useParams().id;
-  const savedCount = JSON.parse(localStorage.getItem("saved_survey")!).length;
+  const [savedCount, setSavedCount] = useState<number>();
+
+  useEffect(() => {
+    if (localStorage.getItem("saved_survey")) {
+      setSavedCount(JSON.parse(localStorage.getItem("saved_survey")!).length);
+    }
+  }, []);
 
   const focusHandler = () => {
     setIsFocus(true);
@@ -307,7 +313,7 @@ const NewPageHeader = (): JSX.Element => {
               <FontAwesomeIcon icon={faPalette} />
             </div>
             <Link
-              to={id === "new" ? `preview/${savedCount}` : `/`}
+              to={id === "new" ? `/preview/${savedCount}` : `/`}
               className="preview"
             >
               <FontAwesomeIcon icon={faEye} />

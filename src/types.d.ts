@@ -10,6 +10,9 @@ export interface InputWrapType {
   isTextBold: (data: boolean) => void;
   isTextItalic: (data: boolean) => void;
   isTextUnderLine: (data: boolean) => void;
+  bold: boolean;
+  italic: boolean;
+  underLine: boolean;
 }
 
 export interface QuestionWrapType {
@@ -82,4 +85,27 @@ export interface TextStyleType {
   isBold: boolean;
   isItalic: boolean;
   isUnderLine: boolean;
+}
+
+export interface PreTitleWrapType {
+  title: string;
+  explain: string;
+  titleType: string;
+  explainType: string;
+}
+
+export type PreviewTitleType = Pick<NewPageType["survey"]["title"]>;
+
+export type PreviewExplainType = Pick<NewPageType["survey"]["titleExplain"]>;
+
+export interface PreviewQuestion {
+  name: string;
+  isItalic: boolean;
+  isBold: boolean;
+  isUnderline: boolean;
+  type: string;
+  isOther: boolean;
+  option?: Option[];
+  isRequired: boolean;
+  type:string;
 }

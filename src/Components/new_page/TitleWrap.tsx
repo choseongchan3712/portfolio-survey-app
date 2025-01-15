@@ -98,6 +98,29 @@ const TitleWrap = (): JSX.Element => {
   const isWriting = useSelector(
     (state: RootState) => state.isWriting.isWriting
   );
+
+  const tBold = useSelector(
+    (state: RootState) => state.survey.survey.title.isBold
+  );
+
+  const tItalic = useSelector(
+    (state: RootState) => state.survey.survey.title.isItalic
+  );
+
+  const tUnderLine = useSelector(
+    (state: RootState) => state.survey.survey.title.isUnderLine
+  );
+
+  const eBold = useSelector(
+    (state: RootState) => state.survey.survey.titleExplain.isBold
+  );
+  const eItalic = useSelector(
+    (state: RootState) => state.survey.survey.titleExplain.isItalic
+  );
+  const eUnderLine = useSelector(
+    (state: RootState) => state.survey.survey.titleExplain.isUnderLine
+  );
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -186,6 +209,9 @@ const TitleWrap = (): JSX.Element => {
         isTextUnderLine={(data) =>
           setTitleText({ ...titleText, isUnderLine: data })
         }
+        bold={tBold}
+        italic={tItalic}
+        underLine={tUnderLine}
       />
       <InputWrap
         dataId="title"
@@ -203,6 +229,9 @@ const TitleWrap = (): JSX.Element => {
         isTextUnderLine={(data) =>
           setExplainText({ ...explainText, isUnderLine: data })
         }
+        bold = {eBold}
+        italic = {eItalic}
+        underLine = {eUnderLine}
       />
     </Container>
   );

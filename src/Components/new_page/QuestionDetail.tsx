@@ -61,6 +61,22 @@ const QuestionDetail = ({
       )?.type
   );
 
+  const bold = useSelector((state: RootState) =>
+    state.survey.survey.question.find(
+      (data) => data.number === Number(dataId.match(/\d+/)?.[0])
+    )
+  )?.isBold ?? false;
+  const italic = useSelector((state: RootState) =>
+    state.survey.survey.question.find(
+      (data) => data.number === Number(dataId.match(/\d+/)?.[0])
+    )
+  )?.isItalic ?? false;
+  const underLine = useSelector((state: RootState) =>
+    state.survey.survey.question.find(
+      (data) => data.number === Number(dataId.match(/\d+/)?.[0])
+    )
+  )?.isUnderLine ?? false;
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -215,6 +231,9 @@ const QuestionDetail = ({
             isTextUnderLine={(data) =>
               setTextStyle({ ...textStyle, isUnderLine: data })
             }
+            bold = {bold}
+            italic = {italic}
+            underLine = {underLine}
           />
         </div>
         <select data-id={dataId} onChange={changeHandler} value={type}>

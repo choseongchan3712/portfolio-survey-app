@@ -85,11 +85,8 @@ const NewPage = (): JSX.Element => {
 
     if (!sessionStorage.getItem("reload")) {
       setIsReload(false);
-
-      console.log("false");
     } else if (sessionStorage.getItem("reload")) {
       setIsReload(true);
-      console.log("true");
     }
   }, []);
 

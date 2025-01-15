@@ -98,6 +98,9 @@ const InputWrap = ({
   isTextBold,
   isTextItalic,
   isTextUnderLine,
+  bold,
+  italic,
+  underLine,
 }: InputWrapType): JSX.Element => {
   const [isClick, setIsClick] = useState<boolean>(false);
   const [isFocus, setIsFocus] = useState<boolean>(false);
@@ -108,25 +111,6 @@ const InputWrap = ({
 
   const clickedName = useSelector(
     (state: RootState) => state.newPageClicked.name
-  );
-
-  const bold = useSelector(
-    (state: RootState) =>
-      state.survey.survey.question.find(
-        (data) => data.number === Number(dataId.match(/\d+/)?.[0])
-      )?.isBold
-  );
-  const italic = useSelector(
-    (state: RootState) =>
-      state.survey.survey.question.find(
-        (data) => data.number === Number(dataId.match(/\d+/)?.[0])
-      )?.isItalic
-  );
-  const underLine = useSelector(
-    (state: RootState) =>
-      state.survey.survey.question.find(
-        (data) => data.number === Number(dataId.match(/\d+/)?.[0])
-      )?.isUnderLine
   );
 
   const dispatch = useDispatch();

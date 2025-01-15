@@ -261,7 +261,7 @@ const OptionWrap = ({
           <div
             className="and"
             data-id={dataId}
-            style={{ display: isDrop ? "none" : "block" }}
+            style={{ display: isDrop || isOther ? "none" : "block" }}
           >
             또는
           </div>
@@ -269,7 +269,7 @@ const OptionWrap = ({
             className="other"
             data-id={dataId}
             onClick={otherHandler}
-            style={{ display: isDrop ? "none" : "block" }}
+            style={{ display: isDrop || isOther ? "none" : "block" }}
           >
             '기타' 추가
           </div>
