@@ -12,10 +12,11 @@ const Container = styled.div`
   z-index: 0;
   top: 0;
   left: 0;
-  width: 100vw;
-  min-height: 100vh;
+  width: 100%;
+  min-height: 100%;
   height: 100%;
   background-color: var(--box-color);
+  padding-bottom: 40px;
   .wrap {
     width: 100%;
     min-height: 100vh;
@@ -31,6 +32,7 @@ const Main = (): JSX.Element => {
   const dispatch = useDispatch();
   const initialState: NewPageType = {
     survey: {
+      isPost: false,
       title: {
         detail: "제목 없는 설문지",
         isItalic: false,

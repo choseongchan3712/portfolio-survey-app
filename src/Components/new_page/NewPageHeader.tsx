@@ -2,16 +2,17 @@ import { faEye, faPalette } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { RootState } from "../../store/store";
 import { useDispatch } from "react-redux";
-import { wirteTitle } from "../../store/surveySlice";
+import { posted, wirteTitle } from "../../store/surveySlice";
 import { writed, writing } from "../../store/IsWritingSlice";
 
 interface Action {
   action: boolean;
   pageName: string;
+  isPost: boolean;
 }
 
 const Container = styled.div<Action>`
@@ -173,13 +174,14 @@ const Container = styled.div<Action>`
         margin-right: 10px;
         padding: 10px 25px;
         border-radius: 5px;
-        background-color: var(--point-color);
+        background-color: ${(props) =>
+          props.isPost ? "var(--gray-2)" : "var(--point-color)"};
         color: var(--box-color);
         font-size: var(--normal-size);
-        cursor: pointer;
+        cursor: ${(props) => (props.isPost ? "unset" : "pointer")};
         transition: 0.25s ease-in-out;
         &:hover {
-          opacity: 0.8;
+          opacity: ${(props) => (props.isPost ? "1" : "0.8")};
         }
       }
     }
@@ -203,7 +205,8 @@ const Container = styled.div<Action>`
       }
       .que {
         color: ${(props) =>
-          props.pageName.includes("/new_page")
+          props.pageName.includes("/new_page") ||
+          props.pageName.includes("/saved_page")
             ? "var(--point-color)"
             : "var(--gray-4))"};
         &::after {
@@ -216,7 +219,10 @@ const Container = styled.div<Action>`
           border-radius: 3px;
           background-color: var(--point-color);
           transform: ${(props) =>
-            props.pageName.includes("/new_page") ? "scaleX(1)" : "scaleX(0)"};
+            props.pageName.includes("/new_page") ||
+            props.pageName.includes("/saved_page")
+              ? "scaleX(1)"
+              : "scaleX(0)"};
           transform-origin: center;
         }
       }
@@ -256,11 +262,15 @@ const NewPageHeader = (): JSX.Element => {
   const [title, setTitle] = useState<string>();
   const dispatch = useDispatch();
   const id = useParams().id;
-  const [savedCount, setSavedCount] = useState<number>();
+  const page = useLocation().pathname;
+  const [savedCount, setSavedCount] = useState<number>(1);
+  const isPost = useSelector((state: RootState) => state.survey.survey.isPost);
+  const survey = useSelector((state: RootState) => state.survey);
 
   useEffect(() => {
-    if (localStorage.getItem("saved_survey")) {
-      setSavedCount(JSON.parse(localStorage.getItem("saved_survey")!).length);
+    const saved = localStorage.getItem("saved_survey");
+    if (saved) {
+      setSavedCount(JSON.parse(saved).length);
     }
   }, []);
 
@@ -285,11 +295,81 @@ const NewPageHeader = (): JSX.Element => {
   }, [title]);
 
   const submitHandler = () => {
-
+    if (isPost === false) {
+      dispatch(posted());
+    }
   };
 
+  useEffect(() => {
+    if (isPost === true) {
+      if (page.includes("new_page")) {
+        const postedSurvey = localStorage.getItem("posted_survey");
+        const savedSurvey = localStorage.getItem("saved_survey");
+        if (postedSurvey && savedSurvey) {
+          const localSurvey = JSON.parse(postedSurvey);
+          if (
+            !JSON.parse(postedSurvey).find(
+              (data: any) => data.id === JSON.parse(savedSurvey).length
+            )
+          ) {
+            const updateSurvey = [
+              ...localSurvey,
+              JSON.parse(savedSurvey).find(
+                (data: any) => data.id === JSON.parse(savedSurvey).length
+              ),
+            ];
+            localStorage.setItem("posted_survey", JSON.stringify(updateSurvey));
+          } else if (
+            JSON.parse(postedSurvey).find(
+              (data: any) => data.id === JSON.parse(savedSurvey).length
+            )
+          ) {
+            const updateSurvey = JSON.parse(postedSurvey).map((data: any) =>
+              data.id === JSON.parse(savedSurvey).length
+                ? { ...data, survey: survey }
+                : data
+            );
+            localStorage.setItem("posted_survey", JSON.stringify(updateSurvey));
+          }
+        } else if (!postedSurvey && savedSurvey) {
+          const updateSurvey = [
+            JSON.parse(savedSurvey).find(
+              (data: any) => data.id === JSON.parse(savedSurvey).length
+            ),
+          ];
+          localStorage.setItem("posted_survey", JSON.stringify(updateSurvey));
+        }
+      } else if (page.includes("saved_page")) {
+        const postedSurvey = localStorage.getItem("posted_survey");
+        const savedSurvey = localStorage.getItem("saved_survey");
+        if (postedSurvey && savedSurvey) {
+          const localSurvey = JSON.parse(postedSurvey);
+          if (!JSON.parse(postedSurvey).find((data: any) => data.id === Number(id))) {
+            const updateSurvey = [
+              ...localSurvey,
+              JSON.parse(savedSurvey).find((data: any) => data.id === Number(id)),
+            ];
+            localStorage.setItem("posted_survey", JSON.stringify(updateSurvey));
+          } else if (
+            JSON.parse(postedSurvey).find((data: any) => data.id === Number(id))
+          ) {
+            const updateSurvey = JSON.parse(postedSurvey).map((data: any) =>
+              data.id === Number(id) ? { ...data, survey: survey } : data
+            );
+            localStorage.setItem("posted_survey", JSON.stringify(updateSurvey));
+          }
+        } else if (!postedSurvey && savedSurvey) {
+          const updateSurvey = [
+            JSON.parse(savedSurvey).find((data: any) => data.id === Number(id)),
+          ];
+          localStorage.setItem("posted_survey", JSON.stringify(updateSurvey));
+        }
+      }
+    }
+  }, [isPost, survey]);
+
   return (
-    <Container action={isFocus} pageName={location}>
+    <Container action={isFocus} pageName={location} isPost={isPost}>
       <div className="top_wrap">
         <div className="title_wrap">
           <Link to={"/"} className="img">
@@ -317,18 +397,29 @@ const NewPageHeader = (): JSX.Element => {
               <FontAwesomeIcon icon={faPalette} />
             </div>
             <Link
-              to={id === "new" ? `/preview/${savedCount}` : `/`}
+              to={id === "new" ? `/preview/${savedCount}` : `/preview/${id}`}
               className="preview"
             >
               <FontAwesomeIcon icon={faEye} />
             </Link>
           </div>
-          <div className="submit" onClick={submitHandler}>게시</div>
+          <div className="submit" onClick={submitHandler}>
+            {isPost ? "게시됨" : "게시"}
+          </div>
         </div>
       </div>
       <div className="bottom_wrap">
         <div className="menu_wrap">
-          <Link to={`/new_page/${id}`} className="que">
+          <Link
+            to={
+              page.includes("new_page")
+                ? `/new_page/${id}`
+                : page.includes("saved_page")
+                ? `/saved_page/${id}`
+                : `/saved_page/${id}`
+            }
+            className="que"
+          >
             질문
           </Link>
           <Link to={`/answer/${id}`} className="ans">

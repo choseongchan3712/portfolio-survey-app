@@ -47,6 +47,7 @@ const SavedPage = (): JSX.Element => {
   const id = useParams().id;
   const initialState: NewPageType = {
     survey: {
+      isPost: false,
       title: {
         detail: "제목 없는 설문지",
         isItalic: false,

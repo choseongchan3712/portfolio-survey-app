@@ -65,6 +65,7 @@ export interface Question {
 
 export interface NewPageType {
   survey: {
+    isPost: boolean;
     title: {
       detail: string;
       isItalic: boolean;
@@ -113,4 +114,5 @@ export interface PreviewQuestion {
 export interface SavedSurveyType {
   link: string;
   title: string;
+  id:number;
 }

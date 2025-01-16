@@ -3,6 +3,7 @@ import { NewPageType, Question } from "../types";
 
 const initialState: NewPageType = {
   survey: {
+    isPost: false,
     title: {
       detail: "제목 없는 설문지",
       isItalic: false,
@@ -37,6 +38,9 @@ const surverySlice = createSlice({
   reducers: {
     pushSurvey: (_, action: PayloadAction<NewPageType>) => {
       return action.payload;
+    },
+    posted: (state) => {
+      state.survey.isPost = true;
     },
     wirteTitle: (state, action: PayloadAction<string>) => {
       state.survey.title.detail = action.payload;
@@ -146,5 +150,6 @@ export const {
   questionChange,
   reorderQuestion,
   reorderOption,
+  posted,
 } = surverySlice.actions;
 export default surverySlice.reducer;

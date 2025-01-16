@@ -1,6 +1,6 @@
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -59,10 +59,11 @@ const Container = styled.div`
 `;
 
 const PreviewHeader = (): JSX.Element => {
+  const id = useParams().id;
   return (
     <Container>
       <div className="detail_wrap">
-        <Link to={"/new_page/new"} className="icon">
+        <Link to={`/saved_page/${id}`} className="icon">
           <FontAwesomeIcon icon={faArrowLeft} />
         </Link>
         <div className="detail">미리보기 모드</div>

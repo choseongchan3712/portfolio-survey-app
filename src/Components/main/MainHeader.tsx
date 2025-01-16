@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const Container = styled.div`
-  position: absolute;
+  position: fixed;
   z-index: 990;
   top: 0;
   left: 0;

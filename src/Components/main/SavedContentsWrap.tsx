@@ -55,6 +55,7 @@ const SavedContentsWrap = (): JSX.Element => {
               key={index}
               link={`/saved_page/${data.id}`}
               title={data.survey.survey.title.detail}
+              id={data.id}
             />
           ))}
         </div>
