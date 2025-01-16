@@ -14,7 +14,7 @@ const Router = () => {
         <Route path="/new_page/:id" element={<NewPage />} />
         <Route path="/saved_page/:id" element={<SavedPage />} />
         <Route path="/preview/:id" element={<Preview />} />
-        <Route path="/write" element={<Write />} />
+        <Route path="/write/:id" element={<Write />} />
         <Route path="/answer/:id" element={<Answer />} />
       </Routes>
     </HashRouter>

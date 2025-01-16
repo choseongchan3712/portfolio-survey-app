@@ -10,7 +10,7 @@ const Container = styled.div<Props>`
   position: relative;
   z-index: 1;
   width: 100%;
-  padding: 20px;
+  padding: 40px 20px;
   border-radius: 10px;
   border: 1px solid var(--border-color);
   background-color: var(--box-color);

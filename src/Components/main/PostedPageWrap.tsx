@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import SavedContentsWrap from "./SavedContentsWrap";
+import PostedContentsWrap from "./PostedContentsWrap";
 
 const Container = styled.div`
   position: relative;
@@ -17,15 +17,15 @@ const Container = styled.div`
   }
 `;
 
-const SavedPageWrap = (): JSX.Element => {
+const PostedPageWrap = (): JSX.Element => {
   return (
     <Container>
       <div className="contents">
-        <div className="title">최근 설문지</div>
-        <SavedContentsWrap />
+        <div className="title">개시된 설문지 작성</div>
+        <PostedContentsWrap />
       </div>
     </Container>
   );
 };
 
-export default SavedPageWrap;
+export default PostedPageWrap;

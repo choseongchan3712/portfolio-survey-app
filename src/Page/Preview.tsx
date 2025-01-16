@@ -26,8 +26,7 @@ const Container = styled.div`
     align-items: center;
   }
   .submit {
-    position: absolute;
-    left: 0;
+    position: relative;
     bottom: -30px;
     padding: 10px 20px;
     border-radius: 10px;

@@ -116,3 +116,8 @@ export interface SavedSurveyType {
   title: string;
   id:number;
 }
+
+export interface PostedSurveyType {
+  link: string;
+  title: string;
+}

@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { NewPageType } from "../types";
 import { useDispatch } from "react-redux";
 import { pushSurvey } from "../store/surveySlice";
+import PostedPageWrap from "../Components/main/PostedPageWrap";
 
 const Container = styled.div`
   position: relative;
@@ -72,6 +73,7 @@ const Main = (): JSX.Element => {
       <div className="wrap">
         <NewPageWrap />
         <SavedPageWrap />
+        <PostedPageWrap />
       </div>
     </Container>
   );
