@@ -12,10 +12,10 @@ const Router = () => {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/new_page/:id" element={<NewPage />} />
-        <Route path="/saved_page" element={<SavedPage />} />
+        <Route path="/saved_page/:id" element={<SavedPage />} />
         <Route path="/preview/:id" element={<Preview />} />
         <Route path="/write" element={<Write />} />
-        <Route path="/answer" element={<Answer />} />
+        <Route path="/answer/:id" element={<Answer />} />
       </Routes>
     </HashRouter>
   );

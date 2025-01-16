@@ -109,3 +109,8 @@ export interface PreviewQuestion {
   isRequired: boolean;
   type:string;
 }
+
+export interface SavedSurveyType {
+  link: string;
+  title: string;
+}

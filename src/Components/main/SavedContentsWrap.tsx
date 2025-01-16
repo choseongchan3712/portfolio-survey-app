@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import SavedSurvey from "./SavedSurvey";
 
 const Container = styled.div`
   width: 100%;
@@ -7,6 +9,13 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   background-color: var(--box-color);
+  .contents {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    row-gap: 10px;
+    column-gap: 20px;
+  }
   .no_contents {
     width: 100%;
     min-height: 150px;
@@ -29,14 +38,35 @@ const Container = styled.div`
 `;
 
 const SavedContentsWrap = (): JSX.Element => {
+  const [surveys, setSurveys] = useState<any>();
+  useEffect(() => {
+    const savedSurvey = localStorage.getItem("saved_survey");
+    if (savedSurvey) {
+      setSurveys(JSON.parse(savedSurvey));
+    }
+  }, []);
+
   return (
     <Container>
-      <div className="no_contents">
-        <div className="heading">설문지 없음</div>
-        <div className="detail">
-          위에서 새 설문지 작성을 클릭하여 시작하세요.
+      {surveys ? (
+        <div className="contents">
+          {surveys.map((data: any, index: number) => (
+            <SavedSurvey
+              key={index}
+              link={`/saved_page/${data.id}`}
+              title={data.survey.survey.title.detail}
+            />
+          ))}
         </div>
-      </div>
+      ) : (
+        <div className="no_contents">
+          <div className="heading">설문지 없음</div>
+          <div className="survey_detail"></div>
+          <div className="detail">
+            위에서 새 설문지 작성을 클릭하여 시작하세요.
+          </div>
+        </div>
+      )}
     </Container>
   );
 };

@@ -13,7 +13,7 @@ import { RootState } from "../store/store";
 import { useEffect, useState } from "react";
 import { NewPageType } from "../types";
 import { pushSurvey } from "../store/surveySlice";
-import { useLocation, useNavigationType, useParams } from "react-router-dom";
+import {useParams } from "react-router-dom";
 
 const Container = styled.div`
   position: relative;

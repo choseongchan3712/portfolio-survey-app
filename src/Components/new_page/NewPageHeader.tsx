@@ -203,7 +203,7 @@ const Container = styled.div<Action>`
       }
       .que {
         color: ${(props) =>
-          props.pageName === "/new_page"
+          props.pageName.includes("/new_page")
             ? "var(--point-color)"
             : "var(--gray-4))"};
         &::after {
@@ -216,13 +216,13 @@ const Container = styled.div<Action>`
           border-radius: 3px;
           background-color: var(--point-color);
           transform: ${(props) =>
-            props.pageName === "/new_page" ? "scaleX(1)" : "scaleX(0)"};
+            props.pageName.includes("/new_page") ? "scaleX(1)" : "scaleX(0)"};
           transform-origin: center;
         }
       }
       .ans {
         color: ${(props) =>
-          props.pageName === "/answer"
+          props.pageName.includes("/answer")
             ? "var(--point-color)"
             : "var(--gray-4))"};
         &::after {
@@ -235,7 +235,7 @@ const Container = styled.div<Action>`
           border-radius: 3px;
           background-color: var(--point-color);
           transform: ${(props) =>
-            props.pageName === "/answer" ? "scaleX(1)" : "scaleX(0)"};
+            props.pageName.includes("/answer") ? "scaleX(1)" : "scaleX(0)"};
           transform-origin: center;
         }
       }
@@ -284,6 +284,10 @@ const NewPageHeader = (): JSX.Element => {
     }
   }, [title]);
 
+  const submitHandler = () => {
+
+  };
+
   return (
     <Container action={isFocus} pageName={location}>
       <div className="top_wrap">
@@ -319,15 +323,15 @@ const NewPageHeader = (): JSX.Element => {
               <FontAwesomeIcon icon={faEye} />
             </Link>
           </div>
-          <div className="submit">게시</div>
+          <div className="submit" onClick={submitHandler}>게시</div>
         </div>
       </div>
       <div className="bottom_wrap">
         <div className="menu_wrap">
-          <Link to={"/new_page"} className="que">
+          <Link to={`/new_page/${id}`} className="que">
             질문
           </Link>
-          <Link to={"/answer"} className="ans">
+          <Link to={`/answer/${id}`} className="ans">
             응답
           </Link>
         </div>

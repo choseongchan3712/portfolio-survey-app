@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { PreviewQuestion } from "../../types";
+import { useState } from "react";
 
 interface Props {
   isBold: boolean;
@@ -141,6 +142,16 @@ const Question = ({
   option,
   type,
 }: PreviewQuestion): JSX.Element => {
+  const [selected, setSelected] = useState<string | null>(null);
+
+  const radioHandler = (e: string) => {
+    if (selected === e) {
+      setSelected(null);
+    } else {
+      setSelected(e);
+    }
+  };
+
   return (
     <Container isBold={isBold} isItalic={isItalic} isUnderline={isUnderline}>
       <div className="contens_wrap">
@@ -158,13 +169,25 @@ const Question = ({
             <div className="choice">
               {option?.map((data, index) => (
                 <label key={index}>
-                  <input type="radio" value={data.name} name="radio" />
+                  <input
+                    type="radio"
+                    value={data.name}
+                    name="radio"
+                    checked={selected === `${data.name}`}
+                    onClick={() => radioHandler(`${data.name}`)}
+                  />
                   {data.name}
                 </label>
               ))}
               {isOther ? (
                 <label className="other">
-                  <input type="radio" value={"other"} name="radio" />
+                  <input
+                    type="radio"
+                    value={"other"}
+                    name="radio"
+                    checked={selected === "other"}
+                    onClick={() => radioHandler("other")}
+                  />
                   <span>기타:</span>
                   <input type="text" className="other_input" />
                 </label>
