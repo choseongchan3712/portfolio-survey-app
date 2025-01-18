@@ -1,11 +1,19 @@
 import styled from "styled-components";
-import { PreviewQuestion } from "../../types";
-import { useState } from "react";
+import { AnswerSliceType, PreviewQuestion } from "../../types";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import { writed, writing } from "../../store/IsWritingSlice";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { useLocation, useParams } from "react-router-dom";
+import { updateAnswer } from "../../store/answerSlice";
+import { useForm } from "react-hook-form";
 
 interface Props {
   isBold: boolean;
   isItalic: boolean;
   isUnderline: boolean;
+  isRequired: boolean;
 }
 
 const Container = styled.div<Props>`
@@ -17,7 +25,10 @@ const Container = styled.div<Props>`
     padding: 0 20px;
     background-color: var(--box-color);
     border-radius: 10px;
-    border: 1px solid var(--border-color);
+    border: ${(props) =>
+      props.isRequired
+        ? "1px solid var(--point-color)"
+        : "1px solid var(--border-color)"};
     .name {
       color: var(--main-color);
       font-size: var(--normal-size);
@@ -141,29 +152,156 @@ const Question = ({
   isUnderline,
   option,
   type,
+  id,
 }: PreviewQuestion): JSX.Element => {
   const [selected, setSelected] = useState<string | null>(null);
+  const [otherValue, setOtherValue] = useState<string>("기타");
+  const [checkValue, setCheckValue] = useState<string[]>();
+  const checkRef = useRef<HTMLInputElement | null>(null);
+  const location = useLocation().pathname;
+  const pageId = useParams().id;
+  const dispatch = useDispatch();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm();
+  const isWriting = useSelector(
+    (state: RootState) => state.isWriting.isWriting
+  );
+  const answerState = useSelector((state: RootState) => state.answer);
+
+  const value = useSelector(
+    (state: RootState) =>
+      state.answer.answers.find((data) => data.id === Number(id))?.value
+  );
+
+  const initialState: AnswerSliceType = {
+    answers: [{ id: 1, question: "", value: "" }],
+  };
 
   const radioHandler = (e: string) => {
     if (selected === e) {
       setSelected(null);
+      if (location.includes("write")) {
+        const value = "";
+        dispatch(updateAnswer({ id, value }));
+      }
     } else {
       setSelected(e);
+      if (location.includes("write")) {
+        if (e === "other") {
+          const value = otherValue;
+          dispatch(updateAnswer({ id, value }));
+        } else {
+          const value = e;
+          dispatch(updateAnswer({ id, value }));
+        }
+      }
     }
   };
 
+  const focusHandler = () => {
+    dispatch(writing());
+  };
+
+  const blurHandler = () => {
+    dispatch(writed());
+  };
+
+  const dropHandler = (e:ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    dispatch(updateAnswer({ id, value }));
+  };
+
+  const textHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    if (location.includes("write")) {
+      const value = e.target.value;
+      dispatch(updateAnswer({ id, value }));
+    }
+  };
+
+  const otherHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    if (location.includes("write")) {
+      const value = e.target.value;
+      setOtherValue(value);
+      dispatch(updateAnswer({ id, value }));
+    }
+  };
+
+  const checkOther = (e: ChangeEvent<HTMLInputElement>) => {
+    if (location.includes("write")) {
+      setValue("checkbox.other", false);
+      setOtherValue(e.target.value);
+    }
+  };
+  const checkboxValue = watch("checkbox");
+  const optionValue = checkboxValue?.option;
+  const other = checkboxValue?.other;
+
+  useEffect(() => {
+    if (location.includes("write")) {
+      if (checkboxValue) {
+        if (optionValue && !other) {
+          const value = optionValue;
+          dispatch(updateAnswer({ id, value }));
+        } else if (optionValue && other) {
+          const option = optionValue;
+          const value = [...option, other];
+          dispatch(updateAnswer({ id, value }));
+        } else if (!optionValue && other) {
+          const value = [other];
+          dispatch(updateAnswer({ id, value }));
+        }
+      }
+    }
+  }, [optionValue, other]);
+
   return (
-    <Container isBold={isBold} isItalic={isItalic} isUnderline={isUnderline}>
+    <Container
+      isBold={isBold}
+      isItalic={isItalic}
+      isUnderline={isUnderline}
+      isRequired={isRequired}
+    >
       <div className="contens_wrap">
         <div className="name">{name}</div>
         <div className="optionWrap">
           {type === "short" ? (
             <div className="short">
-              <input type="text" placeholder="내 답변" />
+              <input
+                type="text"
+                placeholder="내 답변"
+                onFocus={focusHandler}
+                onBlur={blurHandler}
+                onChange={textHandler}
+                value={
+                  isWriting
+                    ? undefined
+                    : location.includes("write")
+                    ? `${value}`
+                    : undefined
+                }
+              />
             </div>
           ) : type === "long" ? (
             <div className="long">
-              <input type="text" placeholder="내 답변" />
+              <input
+                type="text"
+                placeholder="내 답변"
+                onFocus={focusHandler}
+                onBlur={blurHandler}
+                onChange={textHandler}
+                value={
+                  isWriting
+                    ? undefined
+                    : location.includes("write")
+                    ? `${value}`
+                    : undefined
+                }
+              />
             </div>
           ) : type === "choice" ? (
             <div className="choice">
@@ -189,7 +327,11 @@ const Question = ({
                     onClick={() => radioHandler("other")}
                   />
                   <span>기타:</span>
-                  <input type="text" className="other_input" />
+                  <input
+                    type="text"
+                    className="other_input"
+                    onChange={otherHandler}
+                  />
                 </label>
               ) : (
                 <></>
@@ -199,28 +341,40 @@ const Question = ({
             <div className="check">
               {option?.map((data, index) => (
                 <label key={index}>
-                  <input type="checkbox" value={data.name} />
+                  <input
+                    type="checkbox"
+                    value={data.name}
+                    {...register("checkbox.option")}
+                  />
                   {data.name}
                 </label>
               ))}
+              {isOther ? (
+                <label className="other">
+                  <input
+                    type="checkbox"
+                    value={`${otherValue}`}
+                    {...register("checkbox.other")}
+                  />
+                  <span>기타:</span>
+                  <input
+                    type="text"
+                    className="other_input"
+                    onChange={checkOther}
+                  />
+                </label>
+              ) : (
+                <></>
+              )}
             </div>
           ) : type === "drop" ? (
             <div className="drop">
-              <select>
+              <select onChange={dropHandler}>
                 {option?.map((data, index) => (
                   <option value={data.name} key={index}>
                     {data.name}
                   </option>
                 ))}
-                {isOther ? (
-                  <label className="other">
-                    <input type="checkbox" value={"other"} />
-                    <span>기타:</span>
-                    <input type="text" className="other_input" />
-                  </label>
-                ) : (
-                  <></>
-                )}
               </select>
             </div>
           ) : (

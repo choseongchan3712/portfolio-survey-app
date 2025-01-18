@@ -73,7 +73,12 @@ const Container = styled.div<Props>`
       width: 20px;
       height: 20px;
       border: 2px solid var(--gray-2);
-      border-radius: 20px;
+      border-radius: ${(props) =>
+        props.optionType === "choice"
+          ? "20px"
+          : props.optionType === "check"
+          ? "0"
+          : "unset"};
       margin-right: 10px;
     }
     .other_contents {

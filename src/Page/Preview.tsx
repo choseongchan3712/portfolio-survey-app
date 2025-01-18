@@ -106,6 +106,7 @@ const Preview = (): JSX.Element => {
             isRequired={data.isRequired}
             type={data.type}
             option={data.option}
+            id={data.number}
           />
         ))}
         <div className="submit">제출</div>

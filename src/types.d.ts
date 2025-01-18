@@ -108,16 +108,27 @@ export interface PreviewQuestion {
   isOther: boolean;
   option?: Option[];
   isRequired: boolean;
-  type:string;
+  type: string;
+  id:number;
 }
 
 export interface SavedSurveyType {
   link: string;
   title: string;
-  id:number;
+  id: number;
 }
 
 export interface PostedSurveyType {
   link: string;
   title: string;
+}
+
+export interface AnswerType {
+  id: number;
+  question: string;
+  value: string | string[];
+}
+
+export interface AnswerSliceType {
+  answers: AnswerType[];
 }
