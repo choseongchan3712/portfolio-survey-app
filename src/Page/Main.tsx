@@ -64,6 +64,7 @@ const Main = (): JSX.Element => {
   useEffect(() => {
     sessionStorage.removeItem("reload");
     localStorage.setItem("new_survey", JSON.stringify(initialState));
+    localStorage.removeItem('saved_answer');
     dispatch(pushSurvey(initialState));
   }, []);
 

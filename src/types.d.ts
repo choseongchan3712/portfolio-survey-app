@@ -127,6 +127,7 @@ export interface AnswerType {
   id: number;
   question: string;
   value: string | string[];
+  isRequired: boolean;
 }
 
 export interface AnswerSliceType {

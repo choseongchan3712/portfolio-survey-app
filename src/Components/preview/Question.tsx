@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import { AnswerSliceType, PreviewQuestion } from "../../types";
+import { PreviewQuestion } from "../../types";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { writed, writing } from "../../store/IsWritingSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation} from "react-router-dom";
 import { updateAnswer } from "../../store/answerSlice";
 import { useForm } from "react-hook-form";
 
@@ -156,31 +156,30 @@ const Question = ({
 }: PreviewQuestion): JSX.Element => {
   const [selected, setSelected] = useState<string | null>(null);
   const [otherValue, setOtherValue] = useState<string>("기타");
-  const [checkValue, setCheckValue] = useState<string[]>();
-  const checkRef = useRef<HTMLInputElement | null>(null);
+  const dropRef = useRef<HTMLSelectElement | null>(null);
   const location = useLocation().pathname;
-  const pageId = useParams().id;
   const dispatch = useDispatch();
   const {
     register,
-    handleSubmit,
-    formState: { errors },
     watch,
     setValue,
   } = useForm();
   const isWriting = useSelector(
     (state: RootState) => state.isWriting.isWriting
   );
-  const answerState = useSelector((state: RootState) => state.answer);
 
   const value = useSelector(
     (state: RootState) =>
       state.answer.answers.find((data) => data.id === Number(id))?.value
   );
 
-  const initialState: AnswerSliceType = {
-    answers: [{ id: 1, question: "", value: "" }],
-  };
+
+  useEffect(() => {
+    if (dropRef.current?.value) {
+      const value = dropRef.current?.value;
+      dispatch(updateAnswer({ id, value }));
+    }
+  }, []);
 
   const radioHandler = (e: string) => {
     if (selected === e) {
@@ -211,7 +210,7 @@ const Question = ({
     dispatch(writed());
   };
 
-  const dropHandler = (e:ChangeEvent<HTMLSelectElement>) => {
+  const dropHandler = (e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     dispatch(updateAnswer({ id, value }));
   };
@@ -369,7 +368,7 @@ const Question = ({
             </div>
           ) : type === "drop" ? (
             <div className="drop">
-              <select onChange={dropHandler}>
+              <select onChange={dropHandler} ref={dropRef}>
                 {option?.map((data, index) => (
                   <option value={data.name} key={index}>
                     {data.name}
